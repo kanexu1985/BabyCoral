@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<HEAD>  
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+	<script type="text/javascript" src="../js/z.js"></script>	
+	<!-- Bootstrap core CSS -->
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
+</HEAD><BODY> 
+	
+<main role="main">
+<div class="container">
+
+	<div class="row">
+		<div class="col">
+			<h4 id="response">
+				this is home
+			</h4>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col">
+
+			<div id="buts">
+				<a class="btn btn-outline-primary btn-lg" href="../bk"  role="button">
+					BK
+				</a>
+				
+			</div>
+
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			&nbsp;
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-3">
+				<input type="password" class="form-control" size="10" id="lpc" placeholder="Passcode" value=""> 
+		</div>
+		<div class="col-3">
+				
+		</div>
+		<div class="col">
+			<button type="button" class="btn btn-outline-secondary" onClick="logInPc()">
+				Login Passcode
+			</button>	
+		</div>
+	</div>
+	<div class="row">
+
+		<div class="col-3">
+			<input type="text" class="form-control" size="10" id="lu" placeholder="User Name" value=""> 
+		</div>
+
+		<div class="col-3">
+			<input type="password" class="form-control" size="20" id="lp" placeholder="Password" value=""> 
+		</div>
+		<div class="col">
+			<button type="button" class="btn btn-outline-secondary" onClick="logInUp()">
+				Login User/Pwd
+			</button>	
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-6">
+			<!--button type="button" class="btn btn-outline-primary" onClick="showCurrent()">
+				showCurrent
+			</button-->
+			
+		</div>
+		<div class="col-4">
+			<button type="button" class="btn btn-outline-secondary" onClick="logOut()">
+				Logout
+			</button>	
+		</div>
+		<div class="col">
+
+		</div>
+	</div>
+	
+	<div class="row">
+
+		<div class="col-3">
+			<input type="text" class="form-control" size="40" id="tt" placeholder="..." value=""> 
+		</div>
+		<div class="col-3">
+			<input type="password" class="form-control" size="40" id="tts" placeholder="***" value=""> 
+		</div>
+
+		<div class="col">
+			<button type="button" class="btn btn-outline-secondary" onClick="localSmd5()">localSmd5</button>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<div id="not_response_now"></div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<!--spare-->
+		</div>
+	</div>
+
+</div><!--container-->
+</main>
+	
+
+
+<script src="../js/jquery-3.5.1.slim.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
+
+<script type="text/javascript" src="../js/zBbcrmd5.js"></script>	
+<script type="text/javascript">
+	
+/*---------------------------------------------*/
+init();
+function init(){
+	getMenu();
+}
+/*---------------------------------------------*/
+function goto(iv_url){
+	window.location.replace(iv_url);
+}
+/*---------------------------------------------*/
+function getMenu(){
+	clearResponse();
+	
+	var oData={
+		app:"home",
+		act:"getmenu"
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+		afterGetMenu(oDataRt.data);
+	},function(){
+		printResponse("get menu server error");
+	});
+
+}
+
+function afterGetMenu(ia_menu){
+	//console.log(io_data);
+	var lv_buts=genButs(ia_menu);
+	document.getElementById("buts").innerHTML=lv_buts;
+	showCurrent();//make id msg. visible in page
+}
+
+function fResponse(oData){
+	//document.getElementById("response").innerHTML=oData;
+	console.log(oData);
+	printResponse(oData.msg);
+}
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+function clearResponse(){
+	printResponse("");
+}
+
+
+function showCurrent(){
+		
+	//prepare data to send:
+	var oData={
+		app:'home',
+		act:'login_showcur'
+	};
+	
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		console.log(oDataRt);
+		printResponse(oDataRt.msg);
+	},function(){
+		// console.log(this);
+		console.log("server err")
+		printResponse("server err");
+	});
+
+
+}
+
+function logOut(){
+		
+		//prepare data to send:
+		var oData={
+			app:'home',
+			act:'login_lout'
+		};
+		
+		//push JSON str to a value of "js":
+		var postData=encodeURIComponent(JSON.stringify(oData));
+		
+		//send data
+		xhrSend2(postData,function(oDataRt){
+			console.log(oDataRt);
+			printResponse(oDataRt.msg);
+			getMenu();//update menu
+		},function(){
+			// console.log(this);
+			console.log("server err")
+			printResponse("server err");
+		});
+	
+	
+	}
+
+	function logInPc(){
+		
+		var lv = document.getElementById("lpc").value;
+		//bbcrmd5 encode...
+		var oData={
+			app:'home',
+			act:'login_linpc',
+			data:{
+				pc:bbcrmd5(lv)
+			}
+		};
+		
+		//push JSON str to a value of "js":
+		var postData=encodeURIComponent(JSON.stringify(oData));
+		
+		//send data
+		xhrSend2(postData,function(oDataRt){
+			console.log(oDataRt);
+			printResponse(oDataRt.msg);
+			getMenu();//update menu
+		},function(){
+			// console.log(this);
+			console.log("server err")
+			printResponse("server err");
+		});
+	
+	}
+	function logInUp(){//userid password
+		
+		var lv_u = document.getElementById("lu").value;
+		var lv_p = document.getElementById("lp").value;
+		//bbcrmd5 encode...
+		var oData={
+			app:'home',
+			act:'login_userpwd',
+			data:{
+				userid:lv_u.trim().toUpperCase(),
+				pwd:bbcrmd5(lv_p)
+			}
+		};
+		
+		//push JSON str to a value of "js":
+		var postData=encodeURIComponent(JSON.stringify(oData));
+		
+		//send data
+		xhrSend2(postData,function(oDataRt){
+			console.log(oDataRt);
+			printResponse(oDataRt.msg);
+			getMenu();//update menu
+		},function(){
+			// console.log(this);
+			console.log("server err")
+			printResponse("server err");
+		});
+	
+	}
+
+	
+	function localSmd5(){
+		
+		var lv = document.getElementById("tt").value;
+		var lvs = document.getElementById("tts").value;
+		printResponse(bbcrmd5(lv)+"<br>"+bbcrmd5(lvs));
+	}
+
+	
+
+</script>
+
+</body>
+</html>

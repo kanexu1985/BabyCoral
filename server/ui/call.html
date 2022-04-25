@@ -1,0 +1,59 @@
+<HTML><HEAD>  
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+	<script type="text/javascript" src="./js/xhr.js"></script>	
+</HEAD><BODY> 
+	
+	<div>	
+		<input type="text" size="10" name="MS" id="MS" value="this is test, 1=2?"> 
+		<button onClick="fTest()">Test</button>		
+	</div>
+	
+	<div id="response"></div>
+	
+	<script type="text/javascript">
+	
+/*---------------------------------------------*/
+function fTest(){
+
+	//build URL encoded data:
+	var lv_item1 = document.getElementById("MS").value;
+	var la_u = new Array();
+	
+	var i;	
+	
+	la_u.push("flat str 1 ~ ? =!");
+	la_u.push("flat str 2 x x ");
+	la_u.push("flat str 3 (｡･∀･)ﾉﾞ嗨");
+/*	
+	till now, asp cannot accept object-type incoming data
+	
+	la_u.push({
+		name:"Linder",
+		age:19,
+		hobby:"Garden"
+	});
+*/
+
+	//prepare data to send:
+	var oData={
+		msga:lv_item1,
+		tab:la_u
+	};
+	
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		fResponse(oDataRt);
+	});
+}
+
+function fResponse(oData){
+	//document.getElementById("response").innerHTML=oData;
+	console.log(oData);
+}
+</script>
+
+</body>
+</html>

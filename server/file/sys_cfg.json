@@ -1,0 +1,29 @@
+{
+	"ID": "DEV",
+	
+
+    "COOKIE_ID":"BABYCORAL",
+    "_ // COOKIE_ID":"cookie valid period saved in user's browser",
+    
+    "COOKIE_EXP":63072000, 
+    "_ // COOKIE_EXP":"63,072,000 = 3600*24*365*2 seconds, 2 years",
+
+    "LOGIN_EXP":63072000, 
+    "_ // LOGIN_EXP":"63,072,000 = 3600*24*365*2 seconds, 2 years",
+
+    
+    "PATH_SQLITEDB":"/zMod/demo.db",
+
+
+    "MD5_NOISE_HEAD":"(you can add some MD5 noise here)",
+    "MD5_NOISE_TAIL":"(...and here)",
+
+
+
+
+    "BK_TEMP_BOOKDEFAULT":1,
+    "_ // BK_TEMP_BOOKDEFAULT":"temp value for book",
+
+    "TIMEOUT_MIN":"15",
+	"_ end":""
+}

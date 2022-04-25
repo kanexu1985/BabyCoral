@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<HEAD>  
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+	<script type="text/javascript" src="../js/z.js"></script>	
+	<!-- Bootstrap core CSS -->
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
+</HEAD><BODY> 
+	
+<main role="main">
+<div class="container">
+
+	<div class="row">
+		<div class="col">
+			<button type="button" class="btn btn-dark" onClick="bGoHome()">/Home</button>
+			<!-- <button type="button" class="btn btn-outline-primary btn"  onClick="bTest(0)">test</button> -->
+			<br>
+			<br>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bRefresh()">Refresh</button>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bEdit()">Edit</button>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bSave()">Save</button>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col">
+			<input type="text" class="form-control" size="10" id="inp1" placeholder="demo data" value=""> 
+			
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<!-- CR:11 / FY:11 / PB -->
+			<div id="response"></div>
+			<div id="sessionstat"></div>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col">
+			<!--spare-->
+		</div>
+	</div>
+
+</div><!--container-->
+</main>
+	
+
+
+<script src="../js/jquery-3.5.1.slim.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
+	
+	<script type="text/javascript">
+	
+/*---------------------------------------------*/
+const gv_app="demodatalock";
+const gv_timerInterval=1000; //or 10000
+var go_timer;
+var gv_sesstok="";
+var gb_timeoutwarned=false;
+var gb_edit=false;//true=editing
+/*---------------------------------------------*/
+function init(){
+	updateTextareaEdit("inp1");	//update textarea input edit/lock
+	// sessionInit();
+	initPost();
+	startTimer();
+}
+function timer(){
+	sessionTimer();
+}
+function startTimer(){
+	go_timer = setInterval(function() {
+		timer();
+	}, gv_timerInterval);
+}
+
+init();
+/*---------------------------------------------*/
+function goto(iv_url){
+	window.location.replace(iv_url);
+}
+/*---------------------------------------------*/
+
+// function fResponse(oData){
+// 	//document.getElementById("response").innerHTML=oData;
+// 	// console.log(oData);
+// 	printResponse(oData.msg);
+// }
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+function printSessStat(iv){
+	document.getElementById("sessionstat").innerHTML=iv;
+}
+function clearResponse(){
+	printResponse("");
+}
+/*---------------------------------------------*/
+function post_no_response(io,cbf){
+	
+	var oData=io;
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		// console.log(oDataRt);
+		// printResponse(":"+oDataRt.msg);
+		pap(oDataRt);
+		cbf(oDataRt);
+		// printResponse("called");
+	},function(){
+		printResponse("server error");
+	});
+}
+function post(io,cbf){
+	printResponse("...");
+	post_no_response(io,cbf);
+}
+function pap(oDataRt){
+	//process after post
+
+	//update session token
+	if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+
+	//print msg
+	if(oDataRt.msg != null) printResponse(":"+oDataRt.msg);
+
+}
+/*---------------------------------------------*/
+
+function bGoHome(){
+	goto("../home");
+}
+
+function bRefresh(){
+	post({
+		app:gv_app,
+		act:'get',
+		// sesstok:gv_sesstok
+		session:{token:gv_sesstok}
+	},function(oDataRt){
+		// console.log(oDataRt);
+		// if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+		// printResponse(":"+oDataRt.msg);
+		if(oDataRt.data != null) updateTextareaData(oDataRt.data);
+	});
+}
+function bEdit(){
+	var lv_act;
+	var lv_dataid='demodatalock_1';
+
+	if(gb_edit) lv_act='disp';
+	else lv_act = 'edit';
+
+	post({
+		app:gv_app,
+		act:lv_act,
+		dataid:lv_dataid,
+		// sesstok:gv_sesstok
+		session:{token:gv_sesstok}
+	},function(oDataRt){
+		// var lv_msg='';
+		console.log(oDataRt);
+		// if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+		gb_edit=oDataRt.dlock.edit;
+		// lv_msg=oDataRt.msg+", "+oDataRt.dlock.msg;
+		// printResponse(":"+oDataRt.msg);
+		// printResponse(":"+lv_msg);
+		updateTextareaEdit("inp1");
+		if(oDataRt.data != null) updateTextareaData(oDataRt.data);
+	});
+
+}
+function bSave(){
+	var lv_data=document.getElementById("inp1").value;
+
+	post({
+		app:gv_app,
+		act:'save',
+		data:lv_data,
+		session:{token:gv_sesstok}
+	},function(oDataRt){
+		console.log(oDataRt);
+		if(oDataRt.data != null) updateTextareaData(oDataRt.data);
+		// if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+		// printResponse(":"+oDataRt.msg);
+	});
+}
+/*---------------------------------------------*/
+function initPost(){
+	
+	post({
+		app:gv_app,
+		act:'init'
+	},function(oDataRt){
+		// console.log(oDataRt);
+
+		//update data content
+		if(oDataRt.data != null) updateTextareaData(oDataRt.data);
+
+	});
+}
+
+function sessionTimer(){
+
+	/*
+	only check if token with value.
+	token init value should be acquired 
+	after initPost() call when page loaded.
+	Adding this if check to prevent asking act:'achk' before 
+	initPost()'s call back func. is processed
+	*/
+	if(gv_sesstok != ""){
+		post_no_response({
+			app:'session',
+			act:'achk',
+			// sesstok:gv_sesstok
+			session:{token:gv_sesstok}
+		},function(oDataRt){
+			// if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+			//msg if timeout
+			if(oDataRt.session.remain==0 && !gb_timeoutwarned){
+				alert("timeout! pls refresh page to restart session");
+				gb_timeoutwarned=true;
+			}
+			//chk timeout soon
+			sesstionChkTimeoutStat(oDataRt.session.remain);
+
+			// printResponse(":"+oDataRt.msg);
+		});
+	}
+
+
+
+}
+function sesstionChkTimeoutStat(iv_remain){
+	var lv_threshold=120;
+	// var lv_timerInterval=1000;//should be the global timer interval
+	var lv_timerInterval=gv_timerInterval;
+
+	if(iv_remain > lv_threshold)
+		printSessStat("session is online (remain sec: "+iv_remain/1000+")");
+
+	if(iv_remain<=lv_threshold && 
+	   iv_remain > (lv_threshold-lv_timerInterval) )
+		printSessStat("warning: session will soon be timeout (remain sec: "+iv_remain/1000+")");
+
+	if(iv_remain <= 0)
+		printSessStat("session is timeout");
+}
+/*---------------------------------------------*/
+
+function updateTextareaEdit(iv_id){
+	if(gb_edit) document.getElementById(iv_id).disabled=false;
+	else document.getElementById(iv_id).disabled=true;
+}
+function updateTextareaData(iv_data){
+	document.getElementById("inp1").value=iv_data;
+}
+/*---------------------------------------------*/
+
+</script>
+
+</body>
+</html>
+
+

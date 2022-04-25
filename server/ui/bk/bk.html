@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Jekyll v4.1.1">
+  <title>Notebook</title>
+  <script type="text/javascript" src="../js/xhr.js"></script>	
+
+  <!-- link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/album/"-->
+
+  <!-- Bootstrap core CSS -->
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+  <!-- Custom styles for this template -->
+  <link href="../css/bk.css" rel="stylesheet">
+  <link href="../css/navbar-top-fixed.css" rel="stylesheet">
+  <link href="../css/offcanvas.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+	<ul class="navbar-nav my-2 my-md-0">
+
+
+		<!-- open -->
+		<li class="nav-item dropdown">
+			<!-- <button type="button" class="dropdown-toggle btn btn-outline-secondary "  href="#" id="navbarDarkDropdownMenuLink" role="button" data-toggle="dropdown"  aria-expanded="false">
+				OPEN
+			</button>&nbsp; -->
+			<a class="dropdown-toggle nav-link"  href="#" id="navbarDarkDropdownMenuLink" data-toggle="dropdown"  aria-expanded="false">
+				OPEN
+			</a>
+
+			<ul id="dpBookList" class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+				<li><a class="dropdown-item" href="#">Action</a></li>
+				<li><a class="dropdown-item" href="#">Another action</a></li>
+				<li><a class="dropdown-item" href="#">Something else here</a></li>
+			</ul>
+		</li>
+	</ul>
+    <a class="navbar-brand" href="#"  >		
+		<div id="response"></div>
+	</a>
+	
+    <text class="text-secondary text-decoration-none"></text>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+      aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+
+      <div class="navbar-nav mr-auto"></div>
+
+      <ul class="navbar-nav my-2 my-md-0">
+		
+		<li class="nav-item">
+			<a class="nav-link" href="./mng.html">Mng</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="../">/Home <span class="sr-only">(current)</span></a>
+		</li>
+
+      </ul>
+
+    </div>
+  </nav>
+
+
+  <main role="main">
+
+
+    <div class="container">
+		<div class="row">
+			<div class="col">
+
+				<div class="card-deck mb-3 ">
+
+					<div id="divpageb" class="card mb-4 shadow-sm" onclick="eClickInpB()">
+					<div class="card-header" onclick="eClickTitleB()">
+						<h6 class="my-0 font-weight-normal pagetitle">
+
+							<div class="row justify-content-around">
+								<div id="titleb" class="col-8">
+								tag
+								</div>
+								<div id="pageb" class="col-4" style="text-align: right;">
+								--
+								</div>
+							</div>
+						</h6>
+					</div>
+							<textarea class="card-body" id="tab" rows="5" onchange="eInpB(this.value)" onkeyup="eInpB(this.value)">loading...</textarea>
+					</div>
+
+					<div class="card mb-4 shadow-sm" onclick="eClickInpA()">
+						<textarea class="card-body" style="height: 400px;"  id="taa" rows="5" onchange="eInpA(this.value)" onkeyup="eInpA(this.value)">loading...</textarea>
+					<div class="card-header" onclick="eClickTitleA()">
+						<h6 class="my-0 font-weight-normal">
+
+							<div class="row justify-content-around">
+								<div class="d-flex" style="text-align: right; vertical-align:text-bottom;">
+
+									<div class="d-inline">
+										<button  onClick="bPrev()" type="button" class="btn btn-outline-secondary btn-sm">
+										&lt;
+										</button>
+									</div>
+									
+									<div id="pagea" class="d-inline">
+										--
+									</div>
+
+									<div class="d-inline">
+										<button  onClick="bNext()" type="button" class="btn btn-outline-secondary btn-sm">
+										&gt;
+										</button>
+									</div>
+
+								</div>
+								<div id="titlea" class="col-8">
+								-
+								</div>
+							</div>
+						</h6>
+					</div>
+					</div>
+				
+				</div>
+
+			</div>
+		</div><!-- row which contains card(pages) -->
+
+		<div class="row"><!-- buttons -->
+			<div class="col">
+				<div class="d-flex">
+
+					<button id="btnSave" class="btn btn-outline-secondary " type="button" onClick="bSave()">
+						SAVE
+					</button>
+					&nbsp;
+					<button onClick="bNew()" type="button" class="btn btn-outline-secondary ">
+						NEW
+					</button>
+					&nbsp;
+
+					<!--button id="btnADate" class="btn btn-outline-secondary btn-sm" type="button" onClick="bAdate()">+Date</button>
+					&nbsp;&nbsp;&nbsp;
+					-->
+
+					<button id="butEdit" onClick="bEd()" type="button" class="btn btn-outline-secondary ">
+						EDIT
+					</button>
+					<input id="input_title" type="text" class="form-control" placeholder="Tag..." onChange="eInpTitle()" >
+				
+					<button id="butMore" onClick="bMore()" type="button" class="btn btn-outline-secondary ">
+						...
+					</button>
+				</div>
+			</div>
+		</div><!-- buttons -->
+
+		<div id="morebuttons" class="row"><!-- more buttons -->
+			<div class="col-md-6">
+				<button class="btn btn-outline-secondary" type="button" onClick="bQTag()" >QTag</button>
+
+				<button  onClick="bTest()" type="button" class="btn btn-outline-secondary ">
+					TEST
+				</button>
+
+				<button onClick="bGetDraft()" type="button" class="btn btn-outline-secondary ">
+					Get Draft
+				</button>
+
+				<button onClick="bTogglePageB()" type="button" class="btn btn-outline-secondary ">
+					Backside
+				</button>
+
+			</div>
+			<div class="col">
+				<!-- move -->
+				<div class="input-group mb-3">
+					<div class="input-group-prepend" id="button-addon3">
+						<button class="btn btn-outline-secondary" type="button" onClick="bMovePrev()" >&lt;M</button>
+						<button class="btn btn-outline-secondary" type="button" onClick="bMoveNext()" >M&gt;</button>
+						<button class="btn btn-outline-secondary" type="button" onClick="bMoveBfr()" >BFR</button>
+					</div>
+					<input id="input_movebfr" type="text" class="form-control" placeholder="" aria-label="Example text with two button addons" aria-describedby="button-addon3">
+				</div>
+			</div>
+		</div><!-- more buttons -->
+			
+		
+		<div class="row"><!-- 2nd msg board -->
+			<div class="col">
+				<div id="response2"></div>
+			</div>
+		</div>
+
+		<div class="row"><!-- page list -->
+			<div class="col">
+				<div id="pagelist" class="pagelist"></div>
+			</div>
+		</div>
+    
+    </div> <!-- container -->
+  </main>
+  
+
+
+  <!-- Modal fAlert msg pop up-->
+  <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Opps..</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div -->
+        <div class="modal-body" id="modal_msg">
+          Press one key at a time, [Shift] or [Ctrl]
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- bottom bar -->
+  <!-- (now removed)-->
+
+  <script src="../js/jquery-3.5.1.slim.min.js"></script>
+  <script src="../js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    /* gv */
+    var gv_keyShift = false;
+    var gv_keyCtrl = false;
+
+    var C_CLASS_CARD_SEL = "card text-white bg-primary mb-4 shadow-sm";
+    var C_CLASS_CARD_NOR = "card mb-4 shadow-sm"
+    var C_CLASS_ITEM_SEL = "card col-12 text-white bg-primary";
+    var C_CLASS_ITEM_NOR = "card col-12"
+    var C_CLASS_BUTKEY_DOWN = "btn btn-primary ";
+    var C_CLASS_BUTKEY_UP = "btn btn-outline-secondary ";
+    var C_CLASS_BUTSAVE = "btn btn-primary btn-sm my-2 my-sm-0";
+    var C_CLASS_BUTSAVED = "btn btn-outline-secondary btn-sm my-2 my-sm-0";
+	var C_COLOR_TAG = "#007bff";
+    /* function */
+    /** functions that operates the View        */
+
+    function fSetEditOn() {
+      gv_keyShift = true;
+      document.getElementById("butEdit").setAttribute("class", C_CLASS_BUTKEY_DOWN);
+    }
+    function fSetEditOff() {
+      gv_keyShift = false;
+      document.getElementById("butEdit").setAttribute("class", C_CLASS_BUTKEY_UP);
+    }
+
+    function fSetSaveOn() {
+      document.getElementById("btnSave").setAttribute("class", C_CLASS_BUTKEY_DOWN);
+    }
+    function fSetSaveOff() {
+      document.getElementById("btnSave").setAttribute("class", C_CLASS_BUTKEY_UP);
+    }
+
+
+    function fAlert(iv_msg) {
+      //document.getElementById("staticBackdropLabel").innerHTML=iv_title;
+      document.getElementById("modal_msg").innerHTML = iv_msg;
+      $('#staticBackdrop').modal();
+    }
+
+    /* update ui */
+    /** --------------------------------------- */
+
+    /*  click function */
+
+    
+/*---------------------------------------------*/
+var gv_timer0;
+var gv_timer;
+var gv_sel_page;
+var gb_edit=false;//true=editing
+var go_book;
+var go_booklist;
+var gv_time_book_get;
+
+
+function updateTextarea(iv_id){
+	if(gb_edit) document.getElementById(iv_id).disabled=false;
+	else document.getElementById(iv_id).disabled=true;
+}
+/*---------------------------------------------*/
+function fTest(){
+
+}
+    /******************************/
+
+function getInitBook(){
+	clearResponse();
+	
+	var oData={
+		app:"bk",
+		act:"getinit"
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+
+		go_booklist=oDataRt.booklist;
+
+		go_book=oDataRt.book;
+
+		afterGetBookList();
+		afterGetBook();
+	},function(){
+		printResponse("get init server error");
+	});
+}
+
+
+function getBook(iv_userid,iv_book){
+	clearResponse();
+	
+	//prepare data to send:
+	var lv_bookid = iv_book;
+
+	var oData={
+		app:"bk",
+		act:"get",
+		bookid:lv_bookid
+	};
+
+	//clear response div
+	printResponse("");
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+		if(!oDataRt.pass) {
+			console.log("no access");
+			return;
+		}
+
+		go_book=oDataRt.book;
+		afterGetBook();
+	},function(){
+		printResponse("get book server error");
+	});
+}
+
+function getDraft(){
+	if(go_book==undefined || go_book==null)
+		return;
+	clearResponse();
+
+	//prepare data to send:
+	var oData={
+		app:"bk",
+		act:"getdraft",
+		bookid:go_book.bookid,
+		page:gv_sel_page
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+		if(oDataRt.book)
+			afterGetDraft(oDataRt.book.sidea,oDataRt.book.sideb);
+	},function(){
+		printResponse("get draft server error");
+	});
+
+}
+
+    /******************************/
+
+function afterGetBook(){
+
+	//reset time tag
+	gv_time_book_get=Date.now();
+
+	if(go_book.openpage) gv_sel_page=go_book.openpage;
+	else gv_sel_page=1;
+	//show selected page content
+	showPage(gv_sel_page);
+}
+
+function afterGetDraft(iv_sidea,iv_sideb){
+	
+	document.getElementById('taa').value=iv_sidea;
+
+	var lo=go_book.sheets[findPageIndex(gv_sel_page)];
+	lo.sidea=iv_sidea;//todo base64 encode
+	markPageChanged(lo);
+
+	//only update side a for now
+	
+}
+
+function afterGetBookList(){
+
+	var lv_h="";
+	var lv_t="</a></li>";
+	var lv_a="";
+	var lv_as="";
+
+	var lo=go_booklist.list;
+
+	for(var i=0;i<lo.length;i++){
+		lv_h="<li><a class=\"dropdown-item\" href=\"#\" onClick=\"getBook('','"+lo[i].bookid+"') \" >";
+		lv_a=lv_h+lo[i].title+lv_t;
+		lv_as=lv_as+lv_a;
+	}
+	
+	document.getElementById("dpBookList").innerHTML=lv_as;
+	
+}
+
+function findPageIndex(iv_page){
+	var rtv=-1;
+	for(var i=0;i<go_book.sheets.length;i++){
+		if(go_book.sheets[i].page==iv_page) {
+			rtv=i;
+			break;
+		}
+	}
+
+	return rtv;
+}
+function lastPage(){
+	var rtv=0;
+	for(var i=0;i<go_book.sheets.length;i++)
+		if(go_book.sheets[i].page>rtv) rtv=go_book.sheets[i].page;
+	return rtv;
+}
+
+function shiftPage(co_sheet,iv_shift){
+	co_sheet.page=co_sheet.page+iv_shift;
+	markPageChanged(co_sheet);
+}
+
+function markPageChanged(io_sheet){
+	if(io_sheet.dbflag!="N") io_sheet.dbflag="C";
+}
+
+function fResponse(oData){
+	//document.getElementById("response").innerHTML=oData;
+	console.log(oData);
+}
+    /******************************/
+function genTagHtml(iv){
+	if(!iv) return ''; //dont process empty iv
+	return '<font color="'+C_COLOR_TAG+'" >['+iv+']</font>';
+}
+
+function genPageHtml(iv){
+	return '<button type="button" class="btn btn-outline-dark btn-sm" style="border:0;" disabled>'+iv+'</button>';
+}
+
+function togglePageB(){
+	var lv=document.getElementById("divpageb").style.display;
+	//console.log(lv);
+	if(lv=="") document.getElementById("divpageb").style.display="none" ;
+	else document.getElementById("divpageb").style.display="";
+}
+function hidePageB(){
+	document.getElementById("divpageb").style.display="none";
+}
+
+function toggleMoreButtons(){
+	var lv=document.getElementById("morebuttons").style.display;
+	//console.log(lv);
+	if(lv=="") document.getElementById("morebuttons").style.display="none" ;
+	else document.getElementById("morebuttons").style.display="";
+}
+function hideMoreButtons(){
+	document.getElementById("morebuttons").style.display="none";
+}
+
+function showPage(iv_page){
+	var lv_b="";
+	var lv_a="";
+	var lv_tb="";
+	var lv_ta="";
+	var lv_pb="";
+	var lv_pa="";
+	if(iv_page==1){
+		lv_b="["+go_book.title+"]";  //show cover
+
+		lv_a=go_book.sheets[findPageIndex(iv_page)].sidea;
+		lv_ta=go_book.sheets[findPageIndex(iv_page)].title;
+		lv_pa=go_book.sheets[findPageIndex(iv_page)].page;
+	}else{
+		lv_b=go_book.sheets[findPageIndex(iv_page-1)].sideb;
+		lv_tb=go_book.sheets[findPageIndex(iv_page-1)].title;
+		lv_pb=go_book.sheets[findPageIndex(iv_page-1)].page;
+		if(iv_page==lastPage()+1)
+			lv_a="(End of book)";
+		else{
+			lv_a=go_book.sheets[findPageIndex(iv_page)].sidea;
+			lv_ta=go_book.sheets[findPageIndex(iv_page)].title;
+			lv_pa=go_book.sheets[findPageIndex(iv_page)].page;
+		}
+	}
+	
+	document.getElementById('taa').value=lv_a;
+	document.getElementById('tab').value=lv_b;
+	document.getElementById('titlea').innerHTML=genTagHtml(lv_ta);
+	document.getElementById('titleb').innerHTML=genTagHtml(lv_tb);
+	document.getElementById('pagea').innerHTML=genPageHtml(lv_pa);
+	document.getElementById('pageb').innerHTML=genPageHtml(lv_pb);
+	document.getElementById('input_title').value=lv_ta;
+	//when click from page list, need to set gv_sel_page:
+	gv_sel_page=iv_page;
+	printPageNum();//refresh page num to show sel mark []
+}
+
+
+function printPageNum(){
+	var lv_title="";
+	var lv="";
+	var lv_seg="";
+	var lv_segTag="";
+	var lv_segCon="";
+	//var lv_pageh='<button type="button" class="btn btn-outline-primary btn-sm" >';
+	//var lv_paget='</button>';
+	var lv_pageh='';
+	var lv_paget='';
+	var p;
+
+	//book title
+	lv_title="["+go_book.title+"]";
+
+	//page list
+	for(var i=0;i<go_book.sheets.length;i++){
+		p=i+1;
+		lv_segTag=go_book.sheets[findPageIndex(p)].title;
+		lv_segTag=genTagHtml(lv_segTag);
+		
+		lv_segCon=getPreviewLine(go_book.sheets[findPageIndex(p)].sidea);
+		if(p==gv_sel_page)	//curr page/side a
+			lv_seg="==>&nbsp;<a href=# onClick='showPage("+p+")'>"+lv_pageh+p+lv_paget+"</a>&nbsp;";
+		else if(p==gv_sel_page-1)	//prev page/side b
+			lv_seg="-->&nbsp;<a href=# onClick='showPage("+p+")'>"+lv_pageh+p+lv_paget+"</a>&nbsp;";
+		else	//non selected page
+			lv_seg="...&nbsp;<a href=# onClick='showPage("+p+")'>"+lv_pageh+p+lv_paget+"</a>&nbsp;";
+		lv=lv+lv_seg+lv_segTag+"&nbsp;"+lv_segCon+"<br>";
+	}
+
+	//print:
+	document.getElementById("pagelist").innerHTML=lv_title+"<br>"+lv;
+
+}
+function getPreviewLine(iv_str){
+	var lv=iv_str;
+	var lv_cutMax=20;//as const
+	var lv_cutPos=10;
+
+	//try to get \n
+	lv_cutPos=lv.indexOf("\n");
+	if(lv_cutPos<0) //then try to get \r
+		lv_cutPos=lv.indexOf("\r");
+
+	if(lv_cutPos<0) //then use default value lv_cutMax
+		lv_cutPos=lv_cutMax;
+
+	if(lv_cutPos>lv_cutMax) //too long, shorten to lv_cutMax
+		lv_cutPos=lv_cutMax;
+
+	return lv.substring(0,lv_cutPos);
+
+}
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+	document.getElementById("response2").innerHTML=iv;
+}
+function clearResponse(){
+	printResponse("");
+}
+
+function saveDraft(){
+	if(go_book==undefined || go_book==null)
+		return;
+	//for now, only save side A
+	printResponse("saving draft...");
+
+	//prepare data to send:
+	var oData={
+		app:"bk",
+		act:"savedraft",
+		data:{
+			bookid:go_book.bookid,
+			page:gv_sel_page,
+			sidea:document.getElementById('taa').value,//todo base64 encode
+			sideb:document.getElementById('tab').value//todo base64 encode
+		}
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+	},function(){
+		printResponse("draft saving server error");
+	});
+
+}
+    /******************************/
+function bEd(){
+	if(gb_edit){
+		gb_edit=false;
+		fSetEditOff();
+		updateTextarea("tab");
+		updateTextarea("taa");
+	}else{
+		gb_edit=true;
+		fSetEditOn();
+		updateTextarea("tab");
+		updateTextarea("taa");
+	}
+}
+
+function bGetDraft(){
+	getDraft();
+}
+
+function bTogglePageB(){
+	togglePageB();
+}
+
+function bNew(){
+	clearResponse();
+	
+	var lv_newP=gv_sel_page;//+1;
+	//new empty page:
+	var lo_p={
+		//sheetid:2, id is gen by db
+		page:lv_newP,
+		bookid:go_book.bookid,
+		title:"",
+		sidea:"",
+		sideb:"",
+		dbflag:"N"
+	};
+
+	//update page number after
+	var lv_lastPage=go_book.sheets[findPageIndex(go_book.sheets.length)];
+	for(var i=0;i<go_book.sheets.length;i++)
+		if(go_book.sheets[i].page>=lv_newP)
+			shiftPage(go_book.sheets[i],1);
+
+	//insert into go_book
+	go_book.sheets.push(lo_p);
+
+
+	//below similar as bGetSheetsList:
+	//gen&print sheet pages
+	printPageNum();
+
+	//sow selected page content
+	showPage(gv_sel_page);
+
+	//reminder user:
+	printResponse("click SAVE before typing!!!");
+	fSetSaveOn();
+
+}
+
+// function bAdate(){
+// 	clearResponse();
+
+// 	if(!gb_edit){
+// 		printResponse("not in edit mode");
+// 		return;
+// 	}
+
+// 	//var l=document.selection.createRane();
+// 	//var range = input.createTextRange();        //创建一个文本选区对象
+// 	//range.select();   //将选区对象包含的内容选中。
+
+// 	console.log(document.activeElement.id);
+
+// }
+
+function bQTag(){
+	document.getElementById("input_title").value="^_^";
+	eInpTitle();
+}
+
+
+function bSave(){
+	clearResponse();
+	
+	//update openpage
+	go_book.openpage=gv_sel_page;
+	//prepare data to send:
+	var oData={
+		app:"bk",
+		act:"save",
+		data:go_book
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+
+		if(oDataRt.book){
+			//update with new db rtn book:
+			go_book=oDataRt.book;
+			afterGetBook();
+			clearTimeout(gv_timer);//do not save draft after clicking SAVE
+			fSetSaveOff();
+		}
+		
+	},function(){
+		printResponse("save server error");
+	});
+}
+
+function bMore(){
+	toggleMoreButtons();
+}
+
+function bTest(){
+
+	// var lv=go_book.sheets[findPageIndex(gv_sel_page)].sidea;
+	// console.log(getPreviewLine(lv));
+
+	// var lv_msg="Session timeout, SAVE button now disabled. ";
+	// 	lv_msg=lv_msg+"You can still edit and it will automatically be saved as draft, then refresh the page to retrieve the SAVE button and retrieve the draft to save the content.";
+	// 	document.getElementById("btnSave").disabled = true;
+	// 	fAlert(lv_msg);
+}
+
+function bPrev(){
+	clearResponse();
+	
+	if(gv_sel_page==1)
+		printResponse("now in 1st page");
+	else{
+		gv_sel_page--;
+		showPage(gv_sel_page);
+	}
+}
+
+function bNext(){
+	clearResponse();
+	
+	if(gv_sel_page==lastPage()+1)
+		printResponse("now in last page");
+	else{
+		gv_sel_page++;
+		showPage(gv_sel_page);
+	}
+}
+
+function bMovePrev(){
+	clearResponse();
+	
+	if(gv_sel_page==1){
+		printResponse("Already 1st page.");
+		return;
+	}
+
+	var lo_sheetSel=go_book.sheets[findPageIndex(gv_sel_page)];
+	var lo_sheetPre=go_book.sheets[findPageIndex(gv_sel_page-1)];
+
+	lo_sheetSel.page=lo_sheetSel.page-1;
+	markPageChanged(lo_sheetSel);
+
+	lo_sheetPre.page=lo_sheetPre.page+1;
+	markPageChanged(lo_sheetPre);
+
+	//update display
+	gv_sel_page=gv_sel_page-1;
+	showPage(gv_sel_page);
+}
+
+function bMoveNext(){
+	clearResponse();
+
+	if(gv_sel_page>=lastPage()){
+		printResponse("Already last page.");
+		return;
+	}
+
+	var lo_sheetSel=go_book.sheets[findPageIndex(gv_sel_page)];
+	var lo_sheetNex=go_book.sheets[findPageIndex(gv_sel_page+1)];
+
+	lo_sheetSel.page=lo_sheetSel.page+1;
+	markPageChanged(lo_sheetSel);
+
+	lo_sheetNex.page=lo_sheetNex.page-1;
+	markPageChanged(lo_sheetNex);
+
+	//update display
+	gv_sel_page=gv_sel_page+1;
+	showPage(gv_sel_page);
+}
+
+function bMoveBfr(){
+	clearResponse();
+
+	var lv_bfrP=Number(document.getElementById("input_movebfr").value);
+	if(lv_bfrP){
+
+		//validations:
+		if(lv_bfrP==gv_sel_page || lv_bfrP==gv_sel_page+1){
+			printResponse("Already in this position");
+			return;
+		}
+		if(lv_bfrP>go_book.sheets.length){
+			printResponse("Exceed total page, moving to end");
+			lv_bfrP=go_book.sheets.length+1;
+			document.getElementById("input_movebfr").value=lv_bfrP;
+		}
+		
+		//set curr page temp page number
+		go_book.sheets[findPageIndex(gv_sel_page)].page=-1;
+
+		//shift page after the taken one by -1
+		for(var i=0;i<go_book.sheets.length;i++){
+			var lo_sheet=go_book.sheets[i];
+			if(lo_sheet.page>gv_sel_page)
+				shiftPage(lo_sheet,-1);
+		}
+
+		//if moving down, fix the lv_bfrP
+		if(lv_bfrP>gv_sel_page) lv_bfrP--;
+
+		//shift pages after new insert pos by 1
+		for(var i=0;i<go_book.sheets.length;i++){
+			var lo_sheet=go_book.sheets[i];
+			if(lo_sheet.page>=lv_bfrP)
+				shiftPage(lo_sheet,1);
+		}
+
+		//set temp page back
+		go_book.sheets[findPageIndex(-1)].page=lv_bfrP;
+
+		//update ui
+		gv_sel_page=lv_bfrP;
+		document.getElementById("input_movebfr").value=gv_sel_page;
+		printPageNum();
+		showPage(gv_sel_page);
+
+
+	}
+}
+    /******************************/
+
+    /* event */
+
+function eTimer0(){
+	var lv=(Date.now()-gv_time_book_get)/1000;
+	var lv_timeout=60*5; //5min
+	// lv_timeout=5;//for dev only
+	// printResponse(lv);
+	if(lv>=lv_timeout && document.getElementById("btnSave").disabled == false){
+		//lock SAVE button & alert:
+		var lv_msg="Session timeout, SAVE button now disabled. ";
+		lv_msg=lv_msg+"You can still edit and it will automatically be saved as draft, ";
+		lv_msg=lv_msg+"then refresh the page to reactivate the SAVE button and retrieve the draft to save the content.";
+		fAlert(lv_msg);
+		document.getElementById("btnSave").disabled = true;
+	}
+}
+
+function eClickInpA(){
+	//if(!gb_edit) bNext();
+}
+function eClickInpB(){
+	//if(!gb_edit) bPrev();
+}
+
+function eClickTitleA(){
+	//if(gb_edit) bNext();
+}
+function eClickTitleB(){
+	if(gb_edit) bPrev();
+}
+
+function eClickInpA(){
+	//if(!gb_edit) bNext();
+}
+function eClickInpB(){
+	if(!gb_edit) bPrev();
+}
+function eInpB(){
+	clearResponse();
+	
+	if(gv_sel_page==1) return;//cover, don't do anything
+	var lo=go_book.sheets[findPageIndex(gv_sel_page-1)]; //sel previous page
+	lo.sideb=document.getElementById('tab').value;
+
+	markPageChanged(lo);
+}
+function eInpA(){
+	clearResponse();
+	
+	if(gv_sel_page==lastPage()+1) return;//end of book, don't do anything
+	var lo=go_book.sheets[findPageIndex(gv_sel_page)];
+	lo.sidea=document.getElementById('taa').value;//todo base64 encode
+
+	markPageChanged(lo);
+	fSetSaveOn();//illuminate save button
+
+	clearTimeout(gv_timer);
+	gv_timer=setTimeout("saveDraft()",2000);
+}
+
+function eInpTitle(){
+	clearResponse();
+
+	var lv_inp = document.getElementById("input_title").value;
+
+	var lo=go_book.sheets[findPageIndex(gv_sel_page)];
+	lo.title=lv_inp;
+	markPageChanged(lo);
+
+	//update display
+	printPageNum();
+	showPage(gv_sel_page);
+}
+
+
+/*---------------------------------------------*/
+function init(){
+	printResponse("selecta book to start");
+
+	hidePageB();
+	updateTextarea("tab");
+	updateTextarea("taa");
+
+	getInitBook();
+
+	bEd();//click Edit once to enable edit mode
+	hideMoreButtons();//hide more button bar
+
+	//start timer0
+	gv_timer0 = setInterval(function() {
+		eTimer0();
+  	}, 1000);
+
+}
+init();
+/*---------------------------------------------*/
+
+
+    //监听全局键盘按下事件
+    $(document).keydown(function (event) {
+      //alert(event.keyCode);
+      //16=Shift 17=Ctrl
+      //91=Left Cmd(Mac) 93=Right Cmd(Mac)
+	  /*
+      if (event.keyCode == 16) fSetShiftOn();
+      if (event.keyCode == 17) fSetCtrlOn();
+      if (event.keyCode == 91) fSetCtrlOn();
+      if (event.keyCode == 93) fSetCtrlOn();
+	  */
+
+    //   if (event.keyCode == 17) eClickInpB(); //ctrl
+    //   if (event.keyCode == 91) eClickInpB(); //cmd
+
+    //   if (event.keyCode == 16) eClickInpA(); //shift
+    //   if (event.keyCode == 32) eClickInpA(); //space bar
+
+      if (event.keyCode == 37) eClickInpB(); //left arr
+      if (event.keyCode == 38) eClickInpB(); //up arr
+
+      if (event.keyCode == 39) eClickInpA(); //right arr
+      if (event.keyCode == 40) eClickInpA(); //down arr
+
+    });
+
+    $(document).keyup(function (event) {
+		/*
+      if (event.keyCode == 16) fSetShiftOff();
+      if (event.keyCode == 17) fSetCtrlOff();
+      if (event.keyCode == 91) fSetCtrlOff();
+      if (event.keyCode == 93) fSetCtrlOff();
+	  */
+    });
+
+    /* on page load */
+
+  </script>
+
+</html>

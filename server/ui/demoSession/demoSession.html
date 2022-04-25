@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<HEAD>  
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+	<script type="text/javascript" src="../js/z.js"></script>	
+	<!-- Bootstrap core CSS -->
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
+</HEAD><BODY> 
+	
+<main role="main">
+<div class="container">
+
+	<div class="row">
+		<div class="col">
+			<button type="button" class="btn btn-dark" onClick="bGoHome()">/Home</button>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bTest(0)">test</button>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bInit()">init</button>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bTimer()">timer</button>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bAct()">man act</button>
+			<br>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bSave()">demo save</button>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bRefresh()">demo get</button>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col">
+			<div id="response"></div>
+			<div id="sessionstat"></div>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col">
+			<!--spare-->
+		</div>
+	</div>
+
+</div><!--container-->
+</main>
+	
+
+
+<script src="../js/jquery-3.5.1.slim.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
+	
+	<script type="text/javascript">
+	
+/*---------------------------------------------*/
+const gv_app="demosession";
+const gv_timerInterval=1000;
+var gv_sesstok="";
+var gb_timeoutwarned=false;
+/*---------------------------------------------*/
+function init(){
+	sessionInit();
+}
+function timer(){
+	sessionTimer();
+}
+
+init();
+var go_timer = setInterval(function() {
+    timer();
+  }, gv_timerInterval);
+/*---------------------------------------------*/
+function goto(iv_url){
+	window.location.replace(iv_url);
+}
+/*---------------------------------------------*/
+
+function fResponse(oData){
+	//document.getElementById("response").innerHTML=oData;
+	console.log(oData);
+	printResponse(oData.msg);
+}
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+function printSessStat(iv){
+	document.getElementById("sessionstat").innerHTML=iv;
+}
+function clearResponse(){
+	printResponse("");
+}
+/*---------------------------------------------*/
+function post_no_response(io,cbf){
+	
+	var oData=io;
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		// console.log(oDataRt);
+		// printResponse(":"+oDataRt.msg);
+		cbf(oDataRt);
+		// printResponse("called");
+	},function(){
+		printResponse("server error");
+	});
+}
+function post(io,cbf){
+	printResponse("...");
+	post_no_response(io,cbf);
+}
+/*---------------------------------------------*/
+
+function bGoHome(){
+	goto("../home");
+}
+
+function bTest(){
+	
+	post({
+		app:gv_app,
+		act:'test'
+	},function(oDataRt){
+		console.log(oDataRt);
+		printResponse(":"+oDataRt.msg);
+		
+	});
+}
+/*---------------------------------------------*/
+function fPrintGo(){
+	var lv="";
+	for(let key in go){
+		lv=lv+key+":\t"+go[key]+"<br>";
+	}
+
+	printResponse(lv);
+}
+	
+/*---------------------------------------------*/
+function bfun(){
+	// event.returnValue("1");
+	// alert(2);
+	post({
+		app:gv_app,
+		act:'bfun'
+	},function(oDataRt){
+		console.log(oDataRt);
+		printResponse(":"+oDataRt.msg);
+		
+	});
+}
+function bInit(){
+	//here should be loaded in web init()
+	sessionInit();
+}
+function bTimer(){
+	//here should be loaded in global timer event
+	sessionTimer();
+}
+function bAct(){
+	post({
+		app:'session',
+		act:'mact',
+		// sesstok:gv_sesstok
+		session:{token:gv_sesstok}
+	},function(oDataRt){
+		console.log(oDataRt);
+		if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+		printResponse(":"+oDataRt.msg);
+	});
+}
+
+function bSave(){
+	post({
+		app:gv_app,
+		act:'save',
+		session:{token:gv_sesstok}
+	},function(oDataRt){
+		console.log(oDataRt);
+		if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+		printResponse(":"+oDataRt.msg);
+	});
+}
+function bRefresh(){
+	post({
+		app:gv_app,
+		act:'get',
+		// sesstok:gv_sesstok
+		session:{token:gv_sesstok}
+	},function(oDataRt){
+		console.log(oDataRt);
+		if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+		printResponse(":"+oDataRt.msg);
+	});
+}
+/*---------------------------------------------*/
+function sessionInit(){
+
+	post({
+		app:'session',
+		act:'pbeg'
+	},function(oDataRt){
+		console.log(oDataRt);
+		if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+		printResponse(":"+oDataRt.msg);
+	});
+
+}
+function sessionTimer(){
+
+	post_no_response({
+		app:'session',
+		act:'achk',
+		// sesstok:gv_sesstok
+		session:{token:gv_sesstok}
+	},function(oDataRt){
+		console.log(oDataRt);
+		if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+		//msg if timeout
+		if(oDataRt.session.remain==0 && !gb_timeoutwarned){
+			alert("timeout! pls refresh page to restart session");
+			gb_timeoutwarned=true;
+		}
+		//chk timeout soon
+		sesstionChkTimeoutStat(oDataRt.session.remain);
+
+		// printResponse(":"+oDataRt.msg);
+	});
+
+}
+function sesstionChkTimeoutStat(iv_remain){
+	var lv_threshold=2000;
+	// var lv_timerInterval=1000;//should be the global timer interval
+	var lv_timerInterval=gv_timerInterval;
+
+	if(iv_remain > lv_threshold)
+		printSessStat("session is online");
+
+	if(iv_remain<=lv_threshold && 
+	   iv_remain > (lv_threshold-lv_timerInterval) )
+		printSessStat("warning: session will soon be timeout (remain sec: "+iv_remain/1000+")");
+
+	if(iv_remain <= 0)
+		printSessStat("session is timeout");
+}
+/*---------------------------------------------*/
+
+</script>
+
+</body>
+</html>
+
+

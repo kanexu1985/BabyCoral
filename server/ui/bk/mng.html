@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+	<script type="text/javascript" src="../js/z.js"></script>	
+	<!-- Bootstrap core CSS -->
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
+  <title>Notebook Mng</title>	
+
+  <style>
+	  .zbg{
+		  background-color: #c2a182;
+	  }
+	  .zbookrowover {
+		  background-color: #c2a182 ;
+		  border-radius: 5px;
+		  padding: 5px;
+		  margin: 5px;
+	  }
+	  .zbookrow {
+		  background-color: #8e3a22 ;
+		  border-radius: 5px;
+		  padding: 5px;
+		  margin: 5px;
+	  }
+
+	  .zbook{
+		  margin: 2px;
+		  border-width: 1px;
+		  border-color: #2d2926;
+		  background-color: #d8cdbb;
+	  }
+
+	  .zbooksel{
+		  margin: 2px;
+		  border-width: 1px;
+		  border-color: #2d2926;
+		  /* background-color: #c2a182; */
+		  background-color: white;
+		  color: #2d2926;
+	  }
+	  .zspacer{
+		  margin: 2px;
+		  border-width: 1px;
+		  border-color: #8e3a22;
+		  background-color: #8e3a22;
+	  }
+  </style>
+<body class="zbg">
+
+
+
+<main role="main">
+<div class="container">
+
+	<div class="row">
+		<div class="col">
+			<!--spare :-) -->
+			<div id="response"></div>
+		</div>
+	</div>
+
+  <!--toolbar-->
+	<div class="row " >
+		<div class="col">
+			<button type="button" class="btn btn-dark" style="visibility: hidden;">.</button>
+			<!-- <button type="button" class="btn btn-dark">&lt;</button>
+			<button type="button" class="btn btn-dark">&gt;</button> -->
+			<button type="button" class="btn btn-dark" onClick="bMove('l')">←</button>
+			<button type="button" class="btn btn-dark" onClick="bMove('r')">→</button>
+			<button type="button" class="btn btn-dark" onClick="bMove('u')">↑</button>
+			<button type="button" class="btn btn-dark" onClick="bMove('d')">↓</button>
+			<!-- <button type="button" class="btn btn-dark" onClick="bTest()">Test</button> -->
+			<button type="button" class="btn btn-dark" onClick="bNew()">New</button>
+			<button type="button" class="btn btn-dark" onClick="bEdit()">Edit</button>
+			<button type="button" class="btn btn-dark" onClick="bShare()">Share</button>
+			<button type="button" class="btn btn-dark" onClick="bGoHome()">/Home</button>
+		</div>
+	</div>
+
+  <!-- book rows -->
+	<div class="row zbookrowover">
+		<div class="col" id="bksf_mns1">
+			<!-- <button type="button" class="btn btn-warning zbook">[Test Book]</button>
+			<button type="button" class="btn btn-warning zbook">[Some Book]</button>
+			<button type="button" class="btn btn-warning zbook">[Another Book]</button>
+			<button type="button" class="btn btn-warning zbook">[Unknonw Book] by Guest</button>
+			<button type="button" class="btn btn-warning zbook">[Story Book] by Vip</button> -->
+		</div>
+	</div>
+
+	<div class="row zbookrow">
+		<div class="col" id="bksf_0000">
+			<!-- <button type="button" class="btn btn-warning zbook">[Test Book]</button>
+			<button type="button" class="btn btn-warning zbook">[Some Book]</button>
+			<button type="button" class="btn btn-warning zbook">[Another Book]</button>
+			<button type="button" class="btn btn-warning zbook">[Unknonw Book] by Guest</button>
+			<button type="button" class="btn btn-warning zbook">[Story Book] by Vip</button> -->
+		</div>
+	</div>
+
+	<div class="row zbookrow">
+		<div class="col"id="bksf_1000">
+			<!-- <button type="button" class="btn btn-warning zbook">[Test Book2]</button>
+			<button type="button" class="btn btn-warning zbook">[Some Book2]</button> -->
+		</div>
+	</div>
+	<div class="row zbookrow">
+		<div class="col"id="bksf_2000">
+			<!-- <button type="button" class="btn btn-warning zbook">[Test Book3]</button> -->
+		</div>
+	</div>
+	<div class="row zbookrow">
+		<div class="col"id="bksf_3000">
+			<!-- <button type="button" class="btn btn-light zspacer">:-)</button> -->
+		</div>
+	</div>
+
+	<!-- modal -->
+	<div class="modal fade" id="bkTitleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title" id="exampleModalLabel">Enter Book Title...</h5>
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div class="modal-body">
+				<input class="form-control" size="10" id="modal_ipt_title" value=""> 
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-primary" onClick="bModalCloseEdit()">Save and close</button>
+			</div>
+		  </div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="bkShareModal" tabindex="-2" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title" id="exampleModalLabel">Share To...</h5>
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div class="modal-body">
+				<input class="form-control" size="10" id="modal_ipt_sro" value="" placeholder="Read Only Users"> 
+				<input class="form-control" size="10" id="modal_ipt_srw" value="" placeholder="Read/Write Users"> 
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-primary" onClick="bModalCloseShare()">Save and close</button>
+			</div>
+		  </div>
+		</div>
+	</div>
+
+
+</div><!--container-->
+</main>
+
+  <script src="../js/jquery-3.5.1.slim.min.js"></script>
+  <script src="../js/bootstrap.bundle.min.js"></script>
+    
+<script type="text/javascript">
+    
+/*---------------------------------------------*/
+var go_bookslist;
+var gv_sel_bookid;
+/*---------------------------------------------*/
+init();
+function init(){
+	gv_sel_bookid=0;	//bookid in db should begin with 1, 
+						//thus, when page load and value is 0, no book is selected
+	printResponse("loading...");
+	printASpacer("bksf_0000");
+	printASpacer("bksf_1000");
+	printASpacer("bksf_2000");
+	printASpacer("bksf_3000");
+
+	getBooks();
+	// printBooks();
+	// printResponse(":-D");
+}
+/*---------------------------------------------*/
+function getBooks(){
+	// go_bookslist={
+	// 	list:[
+	// 		{
+	// 		bookid:2,
+	// 		title:"lPB note",
+	// 		pos_col:0,
+	// 		pos_row:0
+	// 		},
+	// 		{
+	// 		bookid:3,
+	// 		title:"ldbb日记本",
+	// 		// bksf_pos:1001
+	// 		pos_col:0,
+	// 		pos_row:1
+	// 		},
+	// 		{
+	// 		bookid:4,
+	// 		title:"ldbb笔记本",
+	// 		// bksf_pos:1002
+	// 		pos_col:1,
+	// 		pos_row:1
+	// 		},
+	// 		{
+	// 		bookid:5,
+	// 		title:"lxbb日记本",
+	// 		author:"Eagle",
+	// 		pos_col:0,
+	// 		pos_row:2
+	// 		},
+	// 		{
+	// 		bookid:1,
+	// 		title:"lDas",
+	// 		// bksf_pos:2001
+	// 		pos_col:0,
+	// 		pos_row:3
+	// 		}
+	// 	]
+	// };
+
+
+	printResponse("...");
+	
+	var oData={
+		app:"bk",
+		act:"mng_getbooklist"
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+
+		console.log(oDataRt.booklist);
+		go_bookslist=oDataRt.booklist;
+		printBooks();
+		
+		// afterGetBook();
+	},function(){
+		printResponse("get book list server error");
+	});
+}
+/*---------------------------------------------*/
+//       print
+function clearResponse(){
+	// printResponse("");
+	printResponse(":-)");
+}
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+function printTResponse(iv,i_type){
+
+	var lv_type;
+	if(i_type=="S")
+		lv_type="[S]";
+	if(i_type=="W")
+		lv_type="[!]";
+	if(i_type=="E")
+		lv_type="[X]";
+	if(i_type=="I")
+		lv_type="[i]";
+
+	printResponse(lv_type+" "+iv);
+}
+
+function printBooks(){
+	//clear bksf
+	document.getElementById("bksf_mns1").innerHTML="";
+	document.getElementById("bksf_0000").innerHTML="";
+	document.getElementById("bksf_1000").innerHTML="";
+	document.getElementById("bksf_2000").innerHTML="";
+	document.getElementById("bksf_3000").innerHTML="";
+
+
+	for(i=0;i<go_bookslist.list.length;i++)
+		printABook(go_bookslist.list[i]);
+
+
+	if(document.getElementById("bksf_0000").innerHTML=="")
+		printASpacer("bksf_0000");
+	if(document.getElementById("bksf_1000").innerHTML=="")
+		printASpacer("bksf_1000");
+	if(document.getElementById("bksf_2000").innerHTML=="")
+		printASpacer("bksf_2000");
+	if(document.getElementById("bksf_3000").innerHTML=="")
+		printASpacer("bksf_3000");
+
+}
+function printABook(io_book){
+	var lv_bksf;
+	// var lv_but;
+	var lv_class;
+	var lv_by;
+
+	if (io_book.pos_row<0) lv_bksf="bksf_mns1";
+	if (io_book.pos_row==0)lv_bksf="bksf_0000";
+	if (io_book.pos_row==1)lv_bksf="bksf_1000";
+	if (io_book.pos_row==2)lv_bksf="bksf_2000";
+	if (io_book.pos_row==3)lv_bksf="bksf_3000";
+
+	if(io_book.author)
+		lv_by=" by "+io_book.author;
+	else
+		lv_by="";
+	
+	if(gv_sel_bookid==io_book.bookid)
+		lv_class="btn btn-warning zbooksel";
+	else
+		lv_class="btn btn-warning zbook"
+
+
+	var lo_but=document.createElement("button");
+	// lo_but.setAttribute("id","bk_"+io_book.bookid);
+	lo_but.setAttribute("type","button");
+	lo_but.setAttribute("class",lv_class);
+	lo_but.setAttribute("onClick","bBook("+io_book.bookid+")");
+	lo_but.appendChild(document.createTextNode(io_book.title+lv_by));
+	
+	document.getElementById(lv_bksf).appendChild(lo_but);
+
+}
+function printASpacer(iv_bksf){
+	var lv_bksf=iv_bksf;
+	var lv_class;
+	var lv_by;
+	
+	lv_class="btn btn-warning zspacer"
+
+	var lo_but=document.createElement("button");
+	lo_but.setAttribute("type","button");
+	lo_but.setAttribute("class",lv_class);
+	lo_but.appendChild(document.createTextNode("🎃"));
+
+	document.getElementById(lv_bksf).appendChild(lo_but);
+
+}
+
+function printShareList(io_list){
+
+	var lv_ro="";
+	var lv_rw="";
+	
+	for(var i=0;i<io_list.ro.length;i++)
+		lv_ro=lv_ro+" "+io_list.ro[i];
+
+	for(var i=0;i<io_list.rw.length;i++)
+		lv_rw=lv_rw+" "+io_list.rw[i];
+
+	document.getElementById("modal_ipt_sro").value=lv_ro;
+	document.getElementById("modal_ipt_srw").value=lv_rw;
+}
+/*---------------------------------------------*/
+//       button click
+function bBook(iv_bookid){
+	clearResponse();
+
+	if(iv_bookid==gv_sel_bookid)
+		openBook(iv_bookid);
+	
+
+	gv_sel_bookid=iv_bookid;
+	//redraw buttons
+	printBooks();
+
+}
+function bMove(iv){
+	printResponse("...");
+	
+	var oData={
+		app:"bk",
+		act:"mng_move",
+		to:iv,
+		bookid:gv_sel_bookid
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+		go_bookslist=oDataRt.booklist;
+		printBooks();
+	},function(){
+		printResponse("move book server error");
+	});
+}
+
+
+
+function bTest(){
+	printResponse("...");
+	
+	var oData={
+		app:"bk",
+		act:"getbooklist"
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+
+		console.log(oDataRt.booklist);
+		go_bookslist=oDataRt.booklist;
+		printBooks();
+		
+		// afterGetBook();
+	},function(){
+		printResponse("get book list server error");
+	});
+}
+function bNew(){
+	clearResponse();
+	gv_sel_bookid=0;//deselect book to indicate a New action
+	printBooks();
+	//set modal value
+	document.getElementById("modal_ipt_title").value="";
+	$('#bkTitleModal').modal('show');
+}
+
+function bEdit(){
+	clearResponse();
+	if(gv_sel_bookid<1){
+		printTResponse("Please select a book first.","E");
+		return;
+	}
+	if(go_bookslist.list[selBookIndex()].author){
+		printTResponse("This is not your book.","E");
+		return;
+	}
+
+	//set modal value
+	document.getElementById("modal_ipt_title").value=go_bookslist.list[selBookIndex()].title;
+
+	$('#bkTitleModal').modal('show');
+	
+}
+function bModalCloseEdit(){
+	clearResponse();
+	var lv_mit=document.getElementById("modal_ipt_title").value;
+	if(lv_mit!="")
+		$('#bkTitleModal').modal('hide');
+	else{
+		alert("Book title cannot be empty.")
+		return;
+	}
+
+	// printTResponse("Modal closing... "+lv_mit,"I");
+	// //http call to update title...
+
+	var lv_act;
+	var lo_data;
+
+	if(gv_sel_bookid==0){
+		//new
+		lv_act="mng_newbook";
+		lo_data={title:lv_mit};
+	}else{
+		//Edit(rename)
+		lv_act="mng_rename";
+		lo_data={
+			bookid:gv_sel_bookid,
+			title:lv_mit
+		}
+	}
+
+	var oData={
+		app:"bk",
+		act:lv_act,
+		data:lo_data
+	};
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+
+		go_bookslist=oDataRt.booklist;
+		printBooks();
+		
+	},function(){
+		printResponse("new/edit book server error");
+	});
+}
+
+
+function bShare(){
+	clearResponse();
+	if(gv_sel_bookid<1){
+		printTResponse("Please select a book first.","E");
+		return;
+	}
+	if(go_bookslist.list[selBookIndex()].author){
+		printTResponse("This is not your book.","E");
+		return;
+	}
+
+
+	var oData={
+		app:"bk",
+		act:"mng_getsharelist",
+		bookid:gv_sel_bookid
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+
+		printShareList(oDataRt.list);
+		$('#bkShareModal').modal('show');
+
+
+	},function(){
+		printResponse("server error");
+	});
+
+}
+function bModalCloseShare(){
+	clearResponse();
+
+	var lv_ro=document.getElementById("modal_ipt_sro").value.toUpperCase();
+	var lv_rw=document.getElementById("modal_ipt_srw").value.toUpperCase();
+
+	var la_ro=lv_ro.split(" ");
+	var la_rw=lv_rw.split(" ");
+	var lo={
+		ro:la_ro,
+		rw:la_rw
+	};
+	// console.log(lo);
+	//TODO verify duplicate...
+
+
+	//call server to update...
+	var oData={
+		app:"bk",
+		act:"mng_updatesharelist",
+		bookid:gv_sel_bookid,
+		list:lo
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+		
+		$('#bkShareModal').modal('hide');
+
+	},function(){
+		printResponse("server error");
+	});
+}
+
+function bGoHome(){
+	goto("../home");
+}
+/*---------------------------------------------*/
+//       function
+function selBookIndex(){
+	var r;
+	for(i=0;i<go_bookslist.list.length;i++)
+		if(go_bookslist.list[i].bookid==gv_sel_bookid){
+			r=i;
+			return r;
+		}
+}
+/*---------------------------------------------*/
+function goto(iv_url){
+	window.location.replace(iv_url);
+}
+function openBook(iv_bookid){
+	//alert("opening book: "+iv_bookid);
+	// printTResponse("opening book: "+iv_bookid,"I");
+	clearResponse();
+	
+	var oData={
+		app:"bk",
+		act:"mng_setopen",
+		bookid:iv_bookid
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+		if(oDataRt.pass)
+			goto("./bk.html");		
+
+	},function(){
+		printResponse("server error");
+	});
+
+
+
+
+}
+/*---------------------------------------------*/
+
+
+
+</script>
+  
+</body>
+
+</html>

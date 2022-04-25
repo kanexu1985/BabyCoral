@@ -1,0 +1,39 @@
+{
+    "users":[
+        {
+            "userid": "GUEST",
+            "nicknm": "guest",
+            "group": [
+                "guest"
+            ]
+        },
+        {
+            "userid": "MFS",
+            "nicknm": "Mufasa",
+            "pc":"9BDD79EB85C57A7CCE2C72E7E7138C91",
+            "pwd":"072DE78E184D68A20D4F4F1DA47388BE",
+            "group": [
+                "admin",
+                "member"
+            ]
+        },
+        {
+            "userid": "SMB",
+            "nicknm": "Simba",
+            "pc":"B7EDFF7B6283F526990E5E9F3D0AC525",
+            "pwd":"072DE78E184D68A20D4F4F1DA47388BE",
+            "group": [
+                "member"
+            ]
+        },
+        {
+            "userid": "NAL",
+            "nicknm": "Nala",
+            "pc":"A7D4F9391AC57CDE008BA242BE25CE1F",
+            "pwd":"072DE78E184D68A20D4F4F1DA47388BE",
+            "group": [
+                "member"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,105 @@
+<HTML><HEAD>  
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+</HEAD><BODY> 
+	<div>
+		this is demo2
+	</div>
+	
+	<div>	
+		<input type="text" size="40" name="MS" id="MS" value=""> 
+		<button onClick="fTest()">Test</button>		
+		<button onClick="fTest2()">Test2</button>		
+		<button onClick="fTest3()">Test3</button>		
+	</div>
+
+
+	<div id="response"></div>
+	
+	<script type="text/javascript">
+	
+/*---------------------------------------------*/
+function fTest(){
+
+	//build URL encoded data:
+	// var lv_item1 = document.getElementById("MS").value;
+	// var la_u = new Array();
+	
+	// var i;	
+	
+
+	//prepare data to send:
+	var oData={
+		msga:'j'
+	};
+	
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		fResponse(oDataRt);
+	},function(){
+		// console.log(this);
+		console.log("server err")
+		printResponse("server err");
+	});
+	
+
+	// var lv = document.getElementById("MS").value;
+	// console.log(JSON.parse(decodeURIComponent(lv)));
+
+}
+
+function fResponse(oData){
+	//document.getElementById("response").innerHTML=oData;
+	console.log(oData);
+	printResponse(oData.msg);
+}
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+
+function fTest2(){
+	var obj={
+		col1:'val1',
+		col2:'val2',
+		col3:100,
+		col4:false
+	};
+
+	console.log(encodeURIComponent(JSON.stringify(obj)));
+
+
+}
+
+function fTest3(){
+
+	var lv = document.getElementById("MS").value;
+
+	//prepare data to send:
+	var oData={
+		app:'bs',
+		act:'linup'	//login user/pwd
+		//data:lv
+	};
+	
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		console.log(oDataRt);
+	},function(){
+		// console.log(this);
+		console.log("server err")
+		printResponse("server err");
+	});
+
+
+	console.log(document.cookie);
+}
+
+
+</script>

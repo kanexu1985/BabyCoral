@@ -1,0 +1,82 @@
+{
+    "apps":[
+        {   
+            "app": "css",
+            "access": [
+                "member",
+                "guest"
+            ]
+        },
+        {
+            "app": "js",
+            "access": [
+                "member",
+                "guest"
+            ]
+        },
+        {
+            "app": "home",
+            "access": [
+                "member",
+                "guest"
+            ]
+        },
+        {
+            "app": "session",
+            "access": [
+                "member",
+                "guest"
+            ]
+        },
+        {
+            "app": "bk",
+            "descp":"Notebook",
+            "access": [
+                "member",
+                "guest"
+            ]
+        },
+        {
+            "app": "demo1",
+            "descp":"Demo 1",
+            "access": [
+                "member"
+            ]
+        },
+        {
+            "app": "demo2",
+            "descp":"Demo 2",
+            "access": [
+                "admin"
+            ]
+        },
+        {
+            "app": "demosession",
+            "descp":"Demo Session",
+            "access": [
+                "admin"
+            ]
+        },
+        {
+            "app": "demodatalock",
+            "descp":"Demo D.Lock",
+            "access": [
+                "admin"
+            ]
+        },
+        {
+            "app": "sysset",
+            "descp":"Sys Setting",
+            "access": [
+                "admin"
+            ]
+        },
+        {
+            "app": "devtest",
+            "descp":"Dev Test",
+            "access": [
+                "admin"
+            ]
+        }
+    ]
+}

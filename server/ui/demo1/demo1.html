@@ -1,0 +1,66 @@
+<HTML><HEAD>  
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+</HEAD><BODY> 
+	<div>
+		this is demo1
+	</div>
+	
+	<div>	
+		<input type="text" size="40" name="MS" id="MS" value=""> 
+		<button onClick="fTest()">Test</button>		
+		<button onClick="fTest2()">Test2</button>		
+		<button onClick="fTest3()">Test3</button>		
+	</div>
+
+
+	<div id="response"></div>
+	
+	<script type="text/javascript">
+	
+/*---------------------------------------------*/
+function fResponse(oData){
+	//document.getElementById("response").innerHTML=oData;
+	console.log(oData);
+	printResponse(oData.msg);
+}
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+
+function fTest(){
+
+	//prepare data to send:
+	var oData={
+		app:'home',
+		act:'login_showcur'
+	};
+	
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		console.log(oDataRt);
+		printResponse(oDataRt.msg);
+	},function(){
+		// console.log(this);
+		console.log("server err")
+		printResponse("server err");
+	});
+
+
+
+}
+
+function fTest2(){
+
+}
+
+function fTest3(){
+
+}
+
+
+</script>

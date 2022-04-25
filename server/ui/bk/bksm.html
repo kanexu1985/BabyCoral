@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="en">
+<!--
+	!!!this file is not used!!! 
+-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Jekyll v4.1.1">
+  <title>Notebook</title>
+  <script type="text/javascript" src="../js/xhr.js"></script>	
+
+  <!-- link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/album/"-->
+
+  <!-- Bootstrap core CSS -->
+  <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+  <!-- Custom styles for this template -->
+  <link href="../css/bk.css" rel="stylesheet">
+  <link href="../css/navbar-top-fixed.css" rel="stylesheet">
+  <link href="../css/offcanvas.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">:-)</a>
+    <text class="text-secondary text-decoration-none"></text>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+      aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+
+      <div class="navbar-nav mr-auto"></div>
+
+      <ul class="navbar-nav my-2 my-md-0">	  
+
+        <div class="d-flex">
+			<!--
+			<input  id="BOOKID" class="form-control me-2" type="search" placeholder="Book ID" aria-label="Search" value="1">
+			&nbsp;
+			<button class="btn btn-outline-secondary" onclick="bGetSheetsList()">OPEN</button>
+			-->
+
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				  Open book...
+				</button>
+				<div id="dpBookList" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				  <a class="dropdown-item" href="#">Action</a>
+				  <a class="dropdown-item" href="#">Another action</a>
+				  <a class="dropdown-item" href="#">Something else here</a>
+				</div>
+			</div>
+
+		</div>
+
+      </ul>
+
+    </div>
+  </nav>
+
+  <!--nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Fixed navbar</a>
+
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+      aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+
+          <li class="nav-item active">
+            <a class="nav-link" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav-->
+
+  <main role="main">
+
+
+    <div class="container">
+      <div class="card-deck mb-3 ">
+
+        <div class="card mb-4 shadow-sm" onclick="eClickInpB()">
+          <div class="card-header" onclick="eClickTitleB()">
+            <h6 class="my-0 font-weight-normal pagetitle">
+              <!-- <div id="titleb" class="zinline">xx</div>
+              <div id="pageb" class="zinline">0</div> -->
+
+				<div class="row justify-content-around">
+					<div id="titleb" class="col-8">
+					tag
+					</div>
+					<div id="pageb" class="col-4" style="text-align: right;">
+					99
+					</div>
+				</div>
+            </h6>
+          </div>
+		          <textarea class="card-body" id="tab" rows="5" onchange="eInpB(this.value)" onkeyup="eInpB(this.value)">123</textarea>
+        </div>
+
+        <div class="card mb-4 shadow-sm" onclick="eClickInpA()">
+		      <textarea class="card-body"  id="taa" rows="5" onchange="eInpA(this.value)" onkeyup="eInpA(this.value)">123</textarea>
+          <div class="card-header" onclick="eClickTitleA()">
+            <h6 class="my-0 font-weight-normal">
+				<!-- <div id="titlea" class="zinline"></div>
+				<div id="pagea" class="zinline"></div> -->
+
+				<div class="row justify-content-around">
+					<div id="titlea" class="col-8">
+					tag
+					</div>
+					<div id="pagea" class="col-4" style="text-align: right;">
+					99
+					</div>
+				</div>
+			</h6>
+          </div>
+        </div>
+        
+      </div>
+    
+    </div>
+
+  </main>
+  
+  <!-- buttons -->
+
+
+  <!-- title -->
+    <div class="container">
+
+
+		<p>
+
+			<div class="d-flex">
+				<button onClick="bNew()" type="button" class="btn btn-outline-secondary btn-sm">
+				NEW
+				</button>
+				&nbsp;
+				<button id="butEdit" onClick="bEd()" type="button" class="btn btn-outline-secondary btn-sm">
+				EDIT
+				</button>
+				&nbsp;
+
+				<!--button id="btnADate" class="btn btn-outline-secondary btn-sm" type="button" onClick="bAdate()">+Date</button>
+				&nbsp;&nbsp;&nbsp;
+				-->
+				
+				<button id="btnQTag" class="btn btn-outline-secondary btn-sm" type="button" onClick="bQTag()">QTag</button>
+				&nbsp;&nbsp;&nbsp;
+
+				<input id="input_title" class="form-control me-2" type="text" placeholder="Tag..." onChange="eInpTitle()">
+				&nbsp;&nbsp;&nbsp;
+
+				<button id="btnSave" class="btn btn-outline-secondary btn-sm" type="button" onClick="bSave()">SAVE</button>
+
+			</div>
+	
+		  </p>
+		  <p class="float-right">
+			<!-- //not used, just for spcacing -->
+		  </p>
+
+		<p>
+
+			<div class="d-flex">
+				<button  onClick="bMovePrev()" type="button" class="btn btn-outline-secondary btn-sm">
+				&lt;M
+				</button>
+				&nbsp;
+				<button  onClick="bMoveNext()" type="button" class="btn btn-outline-secondary btn-sm">
+				M&gt;
+				</button>
+				&nbsp;
+
+				<input id="input_movebfr" class="form-control me-2" type="text" placeholder="Move before page..." onChange="eInpTitle()">
+				&nbsp;
+				<button id="butMoveBfr" onClick="bMoveBfr()" type="button" class="btn btn-outline-secondary btn-sm">
+				MOVE
+				</button>
+
+			</div>
+	
+		  </p>
+		<!-- response & page -->
+		<div id="response"></div>
+		<div id="pagelist" class="pagelist"></div>
+
+    </div>
+
+
+  <!-- Modal fAlert msg pop up-->
+  <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Opps..</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div -->
+        <div class="modal-body" id="modal_msg">
+          Press one key at a time, [Shift] or [Ctrl]
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- bottom bar -->
+  <!--nav class="navbar fixed-bottom navbar-light bg-light ">
+
+    <div>
+      <button id="butShift" onClick="bEd()" type="button" class="btn btn-outline-secondary btn-sm">
+        EDIT/DISP
+      </button>
+      &nbsp;&nbsp;&nbsp;
+      <button id="butShift" onClick="bMovePrev()" type="button" class="btn btn-outline-secondary btn-sm">
+        &lt;M
+      </button>
+      &nbsp;&nbsp;&nbsp;
+      <button onClick="bNew()" type="button" class="btn btn-outline-dark btn-sm">
+        NEW
+      </button>
+      &nbsp;&nbsp;&nbsp;
+      <button id="butCtrl" onClick="bMoveNext()" type="button" class="btn btn-outline-secondary btn-sm">
+        M&gt;
+      </button>
+    </div>
+    <div>
+      <button id="btnSave" class="btn btn-outline-secondary btn-sm my-2 my-sm-0" type="button" onClick="bSave()">SAVE</button>
+    </div>
+
+  </nav-->
+
+  <script src="../js/jquery-3.5.1.slim.min.js"></script>
+  <script src="../js/bootstrap.js"></script>
+  <script>
+    //window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')
+    window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')
+  </script>
+  <script src="../js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    /* gv */
+    var gv_keyShift = false;
+    var gv_keyCtrl = false;
+
+    var C_CLASS_CARD_SEL = "card text-white bg-primary mb-4 shadow-sm";
+    var C_CLASS_CARD_NOR = "card mb-4 shadow-sm"
+    var C_CLASS_ITEM_SEL = "card col-12 text-white bg-primary";
+    var C_CLASS_ITEM_NOR = "card col-12"
+    var C_CLASS_BUTKEY_DOWN = "btn btn-primary btn-sm";
+    var C_CLASS_BUTKEY_UP = "btn btn-outline-secondary btn-sm";
+    var C_CLASS_BUTSAVE = "btn btn-primary btn-sm my-2 my-sm-0";
+    var C_CLASS_BUTSAVED = "btn btn-outline-secondary btn-sm my-2 my-sm-0";
+	var C_COLOR_TAG = "#007bff";
+    /* function */
+    /** functions that operates the View        */
+
+    function fSetEditOn() {
+      gv_keyShift = true;
+      document.getElementById("butEdit").setAttribute("class", C_CLASS_BUTKEY_DOWN);
+    }
+    function fSetEditOff() {
+      gv_keyShift = false;
+      document.getElementById("butEdit").setAttribute("class", C_CLASS_BUTKEY_UP);
+    }
+
+
+    function fAlert(iv_msg) {
+      //document.getElementById("staticBackdropLabel").innerHTML=iv_title;
+      document.getElementById("modal_msg").innerHTML = iv_msg;
+      $('#staticBackdrop').modal();
+    }
+
+    /* update ui */
+    /** --------------------------------------- */
+
+    /*  click function */
+
+    
+/*---------------------------------------------*/
+var gv_sel_page;
+var gb_edit=false;//true=editing
+var go_book;
+var go_booklist;
+function bGetSheetsList(){
+	clearResponse();
+	
+	getBook('','DevBook1');
+}
+
+function updateTextarea(iv_id){
+	if(gb_edit) document.getElementById(iv_id).disabled=false;
+	else document.getElementById(iv_id).disabled=true;
+}
+/*---------------------------------------------*/
+function fTest(){
+
+// 	//build URL encoded data:
+// 	var lv_userid = document.getElementById("USERID").value;
+// 	var lv_bookid = document.getElementById("BOOKID").value;
+// 	var la_u = new Array();
+	
+// 	var i;	
+	
+// 	la_u.push("flat str 1 ~ ? =!");
+// 	la_u.push("flat str 2 x x ");
+// 	la_u.push("flat str 3 (｡･∀･)ﾉﾞ嗨");
+// /*	
+// 	till now, asp cannot accept object-type incoming data
+	
+// 	la_u.push({
+// 		name:"Linder",
+// 		age:19,
+// 		hobby:"Garden"
+// 	});
+// */
+
+// 	//prepare data to send:
+// 	var oData={
+// 		act:"getBookSheets",
+// 		user:lv_userid,
+// 		book:lv_bookid
+// 	};
+	
+// 	//push JSON str to a value of "js":
+// 	var postData=encodeURIComponent(JSON.stringify(oData));
+	
+// 	//send data
+// 	xhrSend2(postData,function(oDataRt){
+// 		fResponse(oDataRt);
+// 	});
+}
+
+
+    /******************************/
+
+function getBookList(iv_userid){
+	
+	var oData={
+		app:"bk",
+		act:"getbooklist",
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+
+		go_booklist=oDataRt.booklist;
+		afterGetBookList();
+	},function(){
+		printResponse("get book list server error");
+	});
+}
+
+function getBook(iv_userid,iv_book){
+	clearResponse();
+	
+	//prepare data to send:
+	//var lv_bookid = document.getElementById("BOOKID").value;
+	var lv_bookid = iv_book;
+
+	var oData={
+		app:"bk",
+		act:"get",
+		bookid:lv_bookid
+	};
+
+	//clear response div
+	printResponse("");
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+
+		go_book=oDataRt.book;
+		// //reset sel_page
+		// gv_sel_page=1;
+		afterGetBook();
+	},function(){
+		printResponse("server error");
+	});
+}
+
+    /******************************/
+
+function afterGetBook(){
+	//gen&print sheet pages
+	//printPageNum();
+
+	if(go_book.openpage) gv_sel_page=go_book.openpage;
+	else gv_sel_page=1;
+	//show selected page content
+	showPage(gv_sel_page);
+}
+
+function afterGetBookList(){
+
+	var lv_h="";
+	var lv_t="</a>";
+	var lv_a="";
+	var lv_as="";
+
+	var lo=go_booklist.list;
+
+	for(var i=0;i<lo.length;i++){
+		lv_h="<a class=\"dropdown-item\" href=\"#\" onClick=\"getBook('','"+lo[i].bookid+"') \" >";
+		lv_a=lv_h+lo[i].title+lv_t;
+		lv_as=lv_as+lv_a;
+	}
+	
+	document.getElementById("dpBookList").innerHTML=lv_as;
+	
+}
+
+function findPageIndex(iv_page){
+	var rtv=-1;
+	for(var i=0;i<go_book.sheets.length;i++){
+		if(go_book.sheets[i].page==iv_page) {
+			rtv=i;
+			break;
+		}
+	}
+
+	return rtv;
+}
+function lastPage(){
+	var rtv=0;
+	for(var i=0;i<go_book.sheets.length;i++)
+		if(go_book.sheets[i].page>rtv) rtv=go_book.sheets[i].page;
+	return rtv;
+}
+
+// function shiftPage(co_sheet,iv_shift){
+// function shiftPage(iv_pageIndex,iv_shift){
+function shiftPage(co_sheet,iv_shift){
+	// var lo_sheet=go_book.sheets[findPageIndex(iv_pageIndex)];
+	co_sheet.page=co_sheet.page+iv_shift;
+	// if(lo_sheet.dbflag!="N") lo_sheet.dbflag="C";
+	markPageChanged(co_sheet);
+}
+
+function markPageChanged(io_sheet){
+	// var lo=go_book.sheets[findPageIndex(iv_pageIndex)];
+	// if(lo.dbflag!="N") lo.dbflag="C";
+	if(io_sheet.dbflag!="N") io_sheet.dbflag="C";
+}
+
+function fResponse(oData){
+	//document.getElementById("response").innerHTML=oData;
+	console.log(oData);
+}
+    /******************************/
+function genTagHtml(iv){
+	if(!iv) return ''; //dont process empty iv
+	return '<font color="'+C_COLOR_TAG+'" >['+iv+']</font>';
+}
+
+
+function showPage(iv_page){
+	var lv_b="";
+	var lv_a="";
+	var lv_tb="";
+	var lv_ta="";
+	var lv_pb="";
+	var lv_pa="";
+	if(iv_page==1){
+		lv_b="["+go_book.title+"]";  //show cover
+
+		lv_a=go_book.sheets[findPageIndex(iv_page)].sidea;
+		lv_ta=go_book.sheets[findPageIndex(iv_page)].title;
+		lv_pa=go_book.sheets[findPageIndex(iv_page)].page;
+	}else{
+		lv_b=go_book.sheets[findPageIndex(iv_page-1)].sideb;
+		lv_tb=go_book.sheets[findPageIndex(iv_page-1)].title;
+		lv_pb=go_book.sheets[findPageIndex(iv_page-1)].page;
+		if(iv_page==lastPage()+1)
+			lv_a="(End of book)";
+		else{
+			lv_a=go_book.sheets[findPageIndex(iv_page)].sidea;
+			lv_ta=go_book.sheets[findPageIndex(iv_page)].title;
+			lv_pa=go_book.sheets[findPageIndex(iv_page)].page;
+		}
+	}
+	
+	document.getElementById('taa').value=lv_a;
+	document.getElementById('tab').value=lv_b;
+	document.getElementById('titlea').innerHTML=genTagHtml(lv_ta);
+	document.getElementById('titleb').innerHTML=genTagHtml(lv_tb);
+	document.getElementById('pagea').innerHTML=lv_pa;
+	document.getElementById('pageb').innerHTML=lv_pb;
+	document.getElementById('input_title').value=lv_ta;
+	//when click from page list, need to set gv_sel_page:
+	gv_sel_page=iv_page;
+	printPageNum();//refresh page num to show sel mark []
+}
+
+
+function printPageNum(){
+	var lv_title="";
+	var lv="";
+	var lv_seg="";
+	var lv_segTag="";
+	var lv_segCon="";
+	var p;
+
+	//book title
+	lv_title="["+go_book.title+"]";
+
+	//page list
+	for(var i=0;i<go_book.sheets.length;i++){
+		p=i+1;
+		lv_segTag=go_book.sheets[findPageIndex(p)].title;
+		lv_segTag=genTagHtml(lv_segTag);
+		lv_segCon=go_book.sheets[findPageIndex(p)].sidea.substring(0,10);
+		if(p==gv_sel_page)	//curr page/side a
+			lv_seg="==>&nbsp;<a href=# onClick='showPage("+p+")'>"+p+"</a>&nbsp;";
+		else if(p==gv_sel_page-1)	//prev page/side b
+			lv_seg="-->&nbsp;<a href=# onClick='showPage("+p+")'>"+p+"</a>&nbsp;";
+		else	//non selected page
+			lv_seg="...&nbsp;<a href=# onClick='showPage("+p+")'>"+p+"</a>&nbsp;";
+		lv=lv+lv_seg+lv_segTag+"&nbsp;"+lv_segCon+"<br>";
+	}
+
+	//print:
+	document.getElementById("pagelist").innerHTML=lv_title+"<br>"+lv;
+
+}
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+function clearResponse(){
+	printResponse("");
+}
+
+    /******************************/
+function bEd(){
+	if(gb_edit){
+		gb_edit=false;
+		fSetEditOff();
+		updateTextarea("tab");
+		updateTextarea("taa");
+	}else{
+		gb_edit=true;
+		fSetEditOn();
+		updateTextarea("tab");
+		updateTextarea("taa");
+	}
+}
+
+function bNew(){
+	clearResponse();
+	
+	var lv_newP=gv_sel_page;//+1;
+	//new empty page:
+	var lo_p={
+		//sheetid:2, id is gen by db
+				page:lv_newP,
+				bookid:go_book.bookid,
+				title:"",
+				sidea:"",
+				sideb:"",
+				dbflag:"N"
+	};
+
+	//update page number after
+	var lv_lastPage=go_book.sheets[findPageIndex(go_book.sheets.length)];
+	for(var i=0;i<go_book.sheets.length;i++)
+		if(go_book.sheets[i].page>=lv_newP)
+			// shiftPage(go_book.sheets[i].page,1);
+			shiftPage(go_book.sheets[i],1);
+
+	//insert into go_book
+	go_book.sheets.push(lo_p);
+
+
+	//below similar as bGetSheetsList:
+	//gen&print sheet pages
+	printPageNum();
+
+	//sow selected page content
+	showPage(gv_sel_page);
+
+}
+
+function bAdate(){
+	clearResponse();
+
+	if(!gb_edit){
+		printResponse("not in edit mode");
+		return;
+	}
+
+	//var l=document.selection.createRane();
+	//var range = input.createTextRange();        //创建一个文本选区对象
+	//range.select();   //将选区对象包含的内容选中。
+
+	console.log(document.activeElement.id);
+
+}
+
+function bQTag(){
+	document.getElementById("input_title").value="^_^";
+	eInpTitle();
+}
+
+
+function bSave(){
+	clearResponse();
+	
+	//update openpage
+	go_book.openpage=gv_sel_page;
+	//prepare data to send:
+	var oData={
+		app:"bk",
+		act:"save",
+		data:go_book
+	};
+
+	//clear response div
+	printResponse("");
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		printResponse(oDataRt.msg);
+
+		if(oDataRt.book){
+			//update with new db rtn book:
+			go_book=oDataRt.book;
+			afterGetBook();
+		}
+		
+	},function(){
+		printResponse("server error");
+	});
+}
+
+function bPrev(){
+	clearResponse();
+	
+	if(gv_sel_page==1)
+		printResponse("now in 1st page");
+	else{
+		gv_sel_page--;
+		showPage(gv_sel_page);
+	}
+}
+
+function bNext(){
+	clearResponse();
+	
+	if(gv_sel_page==lastPage()+1)
+		printResponse("now in last page");
+	else{
+		gv_sel_page++;
+		showPage(gv_sel_page);
+	}
+}
+
+function bMovePrev(){
+	clearResponse();
+	
+	if(gv_sel_page==1){
+		printResponse("Already 1st page.");
+		return;
+	}
+
+	var lo_sheetSel=go_book.sheets[findPageIndex(gv_sel_page)];
+	var lo_sheetPre=go_book.sheets[findPageIndex(gv_sel_page-1)];
+
+	lo_sheetSel.page=lo_sheetSel.page-1;
+	// if(lo_sheetSel.dbflag!="N") lo_sheetSel.dbflag="C";
+	markPageChanged(lo_sheetSel);
+
+	lo_sheetPre.page=lo_sheetPre.page+1;
+	// if(lo_sheetPre.dbflag!="N") lo_sheetPre.dbflag="C";
+	markPageChanged(lo_sheetPre);
+
+	//update display
+	gv_sel_page=gv_sel_page-1;
+	showPage(gv_sel_page);
+}
+
+function bMoveNext(){
+	clearResponse();
+
+	if(gv_sel_page>=lastPage()){
+		printResponse("Already last page.");
+		return;
+	}
+
+	var lo_sheetSel=go_book.sheets[findPageIndex(gv_sel_page)];
+	var lo_sheetNex=go_book.sheets[findPageIndex(gv_sel_page+1)];
+
+	lo_sheetSel.page=lo_sheetSel.page+1;
+	// if(lo_sheetSel.dbflag!="N") lo_sheetSel.dbflag="C";
+	markPageChanged(lo_sheetSel);
+
+	lo_sheetNex.page=lo_sheetNex.page-1;
+	// if(lo_sheetNex.dbflag!="N") lo_sheetNex.dbflag="C";
+	markPageChanged(lo_sheetNex);
+
+	//update display
+	gv_sel_page=gv_sel_page+1;
+	showPage(gv_sel_page);
+}
+
+function bMoveBfr(){
+	clearResponse();
+
+	var lv_bfrP=Number(document.getElementById("input_movebfr").value);
+	if(lv_bfrP){
+
+		//validations:
+		if(lv_bfrP==gv_sel_page || lv_bfrP==gv_sel_page+1){
+			printResponse("Already in this position");
+			return;
+		}
+		if(lv_bfrP>go_book.sheets.length){
+			printResponse("Exceed total page, moving to end");
+			lv_bfrP=go_book.sheets.length+1;
+			document.getElementById("input_movebfr").value=lv_bfrP;
+		}
+		
+		//set curr page temp page number
+		go_book.sheets[findPageIndex(gv_sel_page)].page=-1;
+
+		//shift page after the taken one by -1
+		for(var i=0;i<go_book.sheets.length;i++){
+			var lo_sheet=go_book.sheets[i];
+			if(lo_sheet.page>gv_sel_page)
+				shiftPage(lo_sheet,-1);
+		}
+
+		//if moving down, fix the lv_bfrP
+		if(lv_bfrP>gv_sel_page) lv_bfrP--;
+
+		//shift pages after new insert pos by 1
+		for(var i=0;i<go_book.sheets.length;i++){
+			var lo_sheet=go_book.sheets[i];
+			if(lo_sheet.page>=lv_bfrP)
+				shiftPage(lo_sheet,1);
+		}
+
+		//set temp page back
+		go_book.sheets[findPageIndex(-1)].page=lv_bfrP;
+
+		//update ui
+		gv_sel_page=lv_bfrP;
+		document.getElementById("input_movebfr").value=gv_sel_page;
+		printPageNum();
+		showPage(gv_sel_page);
+
+
+	}
+}
+    /******************************/
+
+    /* event */
+
+function eClickInpA(){
+	if(!gb_edit) bNext();
+}
+function eClickInpB(){
+	if(!gb_edit) bPrev();
+}
+
+function eClickTitleA(){
+	if(gb_edit) bNext();
+}
+function eClickTitleB(){
+	if(gb_edit) bPrev();
+}
+
+function eClickInpA(){
+	if(!gb_edit) bNext();
+}
+function eClickInpB(){
+	if(!gb_edit) bPrev();
+}
+function eInpB(){
+	clearResponse();
+	
+	if(gv_sel_page==1) return;//cover, don't do anything
+	var lo=go_book.sheets[findPageIndex(gv_sel_page-1)]; //sel previous page
+	lo.sideb=document.getElementById('tab').value;
+	// lo.sideb=encodeURIComponent(document.getElementById('tab').value);
+	// if(lo.dbflag!="N") lo.dbflag="C";
+	markPageChanged(lo);
+}
+function eInpA(){
+	clearResponse();
+	
+	if(gv_sel_page==lastPage()+1) return;//end of book, don't do anything
+	var lo=go_book.sheets[findPageIndex(gv_sel_page)];
+	lo.sidea=document.getElementById('taa').value;
+	// lo.sidea=encodeURIComponent(document.getElementById('taa').value);
+	// if(lo.dbflag!="N") lo.dbflag="C";
+	markPageChanged(lo);
+}
+
+function eInpTitle(){
+	clearResponse();
+
+	var lv_inp = document.getElementById("input_title").value;
+
+	var lo=go_book.sheets[findPageIndex(gv_sel_page)];
+	lo.title=lv_inp;
+	markPageChanged(lo);
+
+	//update display
+	printPageNum();
+	showPage(gv_sel_page);
+}
+
+
+/*---------------------------------------------*/
+function init(){
+
+updateTextarea("tab");
+updateTextarea("taa");
+
+getBookList("");//todo change to get user id
+}
+init();
+/*---------------------------------------------*/
+
+
+    //监听全局键盘按下事件
+    $(document).keydown(function (event) {
+      //alert(event.keyCode);
+      //16=Shift 17=Ctrl
+      //91=Left Cmd(Mac) 93=Right Cmd(Mac)
+	  /*
+      if (event.keyCode == 16) fSetShiftOn();
+      if (event.keyCode == 17) fSetCtrlOn();
+      if (event.keyCode == 91) fSetCtrlOn();
+      if (event.keyCode == 93) fSetCtrlOn();
+	  */
+
+    //   if (event.keyCode == 17) eClickInpB(); //ctrl
+    //   if (event.keyCode == 91) eClickInpB(); //cmd
+
+    //   if (event.keyCode == 16) eClickInpA(); //shift
+    //   if (event.keyCode == 32) eClickInpA(); //space bar
+
+      if (event.keyCode == 37) eClickInpB(); //left arr
+      if (event.keyCode == 38) eClickInpB(); //up arr
+
+      if (event.keyCode == 39) eClickInpA(); //right arr
+      if (event.keyCode == 40) eClickInpA(); //down arr
+
+    });
+
+    $(document).keyup(function (event) {
+		/*
+      if (event.keyCode == 16) fSetShiftOff();
+      if (event.keyCode == 17) fSetCtrlOff();
+      if (event.keyCode == 91) fSetCtrlOff();
+      if (event.keyCode == 93) fSetCtrlOff();
+	  */
+    });
+
+    /* on page load */
+
+  </script>
+
+</html>

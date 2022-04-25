@@ -1,0 +1,150 @@
+<HTML><HEAD>  
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+</HEAD><BODY> 
+	<div>
+		<button onClick="bGoHome()">/Home</button>
+		this is sysset
+	</div>
+	
+	<div>	
+		<input type="text" size="40" id="tt" value=""> 
+		<button onClick="askSmd5()">askSmd5</button>		
+		<button onClick="localSmd5()">localSmd5</button>		
+	</div>
+
+	<div>	
+		<button onClick="call('reloadjson')">reloadJson</button>	
+		<button onClick="call('getmemstat')">getMemStat</button>	
+	</div>
+
+	<div>	
+		<input type="text" size="40" id="ts" value=""> 
+		<button onClick="killsess('id')">kill session by id</button>	
+		<button onClick="killsess('user')">kill session by user</button>	
+	</div>
+
+	<div id="response"></div>
+	<hr height="1">
+	<div id="response_more" style="font-family:Monospace;"></div>
+	
+	<div>		
+		<button onClick="call('getmemstat')">getMemStat</button>	
+	</div>
+
+	<script type="text/javascript" src="../js/zBbcrmd5.js"></script>	
+	<script type="text/javascript">
+
+function bGoHome(){
+	window.location.replace("../home");
+}	
+/*---------------------------------------------*/
+function call(iv_act){
+
+	//prepare data to send:
+	var oData={
+		app:'sysset',
+		act:iv_act
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		fResponse(oDataRt);
+		fResponse_more(oDataRt);
+
+	},function(){
+		// console.log(this);
+		console.log("server err")
+		printResponse("server err");
+	});
+	
+
+}
+
+function killsess(iv_flag){
+	var lv=document.getElementById("ts").value;
+	var lv_act;
+	if(iv_flag=="id") lv_act="killsessid";
+	if(iv_flag=="user") lv_act="killsessuser"
+
+	var oData={
+		app:'sysset',
+		act:lv_act,
+		sessidoruser:lv
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		fResponse(oDataRt);
+		fResponse_more(oDataRt);
+
+	},function(){
+		// console.log(this);
+		console.log("server err")
+		printResponse("server err");
+	});
+}
+
+function fResponse(oData){
+	//document.getElementById("response").innerHTML=oData;
+	console.log(oData);
+	printResponse(oData.msg);
+}
+
+
+function fResponse_more(oData){
+	// var l=JSON.stringify(oData,null, '\t');
+	var l=JSON.stringify(oData,null, '&nbsp;');
+	l=l.replace(/\n/g,"<br>")
+	// console.log(l);
+	document.getElementById("response_more").innerHTML=(l);
+}
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+
+
+function askSmd5(){
+	
+	//build URL encoded data:
+	var lv = document.getElementById("tt").value;
+
+	//prepare data to send:
+	var oData={
+		app:'home',
+		act:'asksmd5',
+		data:{
+			value:lv
+		}
+	};
+	
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		fResponse(oDataRt);
+	},function(){
+		// console.log(this);
+		console.log("server err")
+		printResponse("server err");
+	});
+
+}
+function localSmd5(){
+	
+	var lv = document.getElementById("tt").value;
+	printResponse(bbcrmd5(lv));
+}
+
+</script>
+
+</body>
+</html>

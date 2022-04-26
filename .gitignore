@@ -1,7 +1,10 @@
 # some my private app/file not published
-settings/sys_cfg2.json
-zMod/pbfyqin.js
-ui/pbfyqin/
+server/settings/sys_cfg2.json
+server/zMod/pbfyqin.js
+server/ui/pbfyqin/
+
+# MacOS Finder cache
+.DS_Store
 
 # Logs
 logs

@@ -15,15 +15,27 @@ module.exports={
     init2:async function(){
         //add more sys-specific attributes from file/sys_cfg.json:
         
-        var d= await zmFile.asyncRead(__dirname+"/../file/sys_cfg.json");
+        var d = await zmFile.asyncRead(__dirname+"/../settings/sys_cfg.json");
 
-        console.log("zmC init2 json read ok");
-        var lo=JSON.parse(d);
+        console.log("zmC sys_cfg json read ok");
+        var lo =JSON.parse(d);
 
         for(let key in lo){
             module.exports[key]=lo[key];
         }
 
+        //another cfg file not published on github
+        try {
+            var d2= await zmFile.asyncRead(__dirname+"/../settings/sys_cfg2.json"); 
+            console.log("zmC sys_cfg2 json read ok");
+            var lo2=JSON.parse(d2);
+            for(let key2 in lo2){
+                module.exports[key2]=lo2[key2];
+            }
+        } catch (error) {
+            console.log("sys_cfg2 read err");
+        }
+       
         console.log("zmC values:");
         console.log(module.exports);
 

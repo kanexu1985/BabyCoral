@@ -12,13 +12,11 @@
     "_ // LOGIN_EXP":"63,072,000 = 3600*24*365*2 seconds, 2 years",
 
     
-    "PATH_SQLITEDB":"/zMod/demo.db",
+    "PATH_SQLITEDB":"/data/demo.db",
 
 
     "MD5_NOISE_HEAD":"(you can add some MD5 noise here)",
     "MD5_NOISE_TAIL":"(...and here)",
-
-
 
 
     "BK_TEMP_BOOKDEFAULT":1,

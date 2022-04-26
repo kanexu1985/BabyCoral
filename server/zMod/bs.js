@@ -114,7 +114,7 @@ exports.accessInit=function(){
     exports.accessReadJson();
 }
 exports.accessReadJson=function(){
-    zmFile.read(zmC.PATH_HOME+"/zMod/bs_app.json",function(e,d){
+    zmFile.read(zmC.PATH_HOME+"/settings/bs_app.json",function(e,d){
         if(e){
             console.log("app init file read error:");
             console.log(e);

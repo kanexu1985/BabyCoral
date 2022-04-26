@@ -31,7 +31,7 @@ exports.init=function(){
     exports.readJson();
 }
 exports.readJson=function(){
-    zmFile.read(zmC.PATH_HOME+"/zMod/bs_user.json",function(e,d){
+    zmFile.read(zmC.PATH_HOME+"/settings/user_users.json",function(e,d){
         if(e){
             console.log("user init file read error:");
             console.log(e);

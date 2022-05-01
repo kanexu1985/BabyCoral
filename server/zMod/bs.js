@@ -1,4 +1,5 @@
 /** basic framework */
+const cons = require('./cons.js');
 var zmC=require('./cons.js');
 var zmCookie=require('./cookie.js');
 var zmFile=require('./file.js');
@@ -101,7 +102,14 @@ exports.verifyCookie=function(){
     }
     //set to user module:
     if(rtv)
-        zmUser.setByCookie(lo.data.userid);
+        //verify before set
+        if(zmUser.verifyUser(lo.data.userid)){
+            zmUser.setByCookie(lo.data.userid);
+        }else{
+            console.log("verifyCookie user not valid, logging out");
+            console.log(lo.data.userid);
+            zmUser.logOut();
+        }
     else
         zmUser.logOut();
 
@@ -130,6 +138,7 @@ exports.accessCheckGet=function(iv_url){
 
     if(iv_url=="/favicon.ico") return true; //icon path, always provide access,
     if(iv_url=="/") return true;            //home path, always provide access,
+    if(iv_url=="/test") return true;        //test app, always provide access,
     //will convert to /home in later code( zProcessGetUrl() )
 
     //get app in url:

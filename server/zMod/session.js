@@ -38,6 +38,36 @@ exports.main=function(io){
         //to do: check logic later
         lo_chk = manLogout(io.session.token);
     }
+    if(io.act=="listsession"){
+        //other purpose, return without lo_chk
+        var la=listSessionByUser(zmUser.curUserid());
+        rtv={
+            list:la,
+            msg:"You have "+la.length+" session(s)"
+        }
+
+        return rtv;
+    }
+    if(io.act=="delownsess"){
+        //verify user first
+        var lv_userid=zmUser.curUserid();
+        if(lv_userid!=io.userid){
+            rtv={
+                msg:"User ID error. You can only delete your own session."
+            }
+            return rtv;
+        }
+
+        //now del sessions:
+        exports.killByUser(lv_userid);
+        var la=listSessionByUser(zmUser.curUserid());
+        rtv={
+            list:la,
+            msg:"Your session(s) are deleted."
+        }
+
+        return rtv;
+    }
 
     rtv={
         session:lo_chk,
@@ -57,6 +87,17 @@ exports.mact=function(iv_token){
     return manAction(iv_token);
 }
 
+exports.checkSession=function(io){
+    //called at the beginning of module..main
+    var lo_sesschk=exports.emptyObj();
+    
+    //may possible have no .session, or no .session.token
+    if(io.session)
+        if(io.session.token) 
+            lo_sesschk=exports.mact(io.session.token);
+            
+    return lo_sesschk;
+}
 exports.getSessionId=function(iv_token){
     //should only be called in server
     //session id should not pass to UI
@@ -66,6 +107,19 @@ exports.getSessionId=function(iv_token){
     if(lo_old) return lo_old.id;
     else return '';
 }
+exports.curUserid=function(iv_token){
+    //for unknown cause, using zmUser.curUserid 
+    //may lead to wrong result, while 2 or more user is 
+    //viewing Notebook, and frontend session is sending
+    //nop POST call for checking timeout
+    //thus, using frontend session info (token) to determine
+    //correct userid
+    var la=findSession(iv_token);
+    if(la!=null)
+        return la.userid;
+    else
+        return "";
+}
 
 exports.checkSessExist=function(iv_sessid){
     var rtv = false;
@@ -74,6 +128,15 @@ exports.checkSessExist=function(iv_sessid){
         if(ma_list[i].id==iv_sessid) rtv=true;
     }
 
+    return rtv;
+}
+
+exports.checkUserBySessionId=function(iv_sessid){
+    var rtv="";
+
+    for(var i=0;i<ma_list.length;i++)
+        if(ma_list[i].id==iv_sessid) rtv=ma_list[i].userid;
+    
     return rtv;
 }
 
@@ -92,7 +155,6 @@ exports.killByUser=function(iv_userid){
     //should only be called by sys mng tool
     delSessionFromUser(iv_userid);
 }
-
 /* ============================= */
 function pageBegins(iv_userid){
 
@@ -146,6 +208,20 @@ function manLogout(iv_token){
     }
 }
 
+function listSessionByUser(iv_userid){
+    var la=new Array();
+
+    for(var i=0;i<ma_list.length;i++)
+        if(ma_list[i].userid==iv_userid)
+            la.push({
+                user:ma_list[i].userid,
+                reg_time:ma_list[i].regtimeR,
+                remain:ma_list[i].remainR
+            });
+    
+    return la;
+    // console.log(la);
+}
 /* ============================= */
 
 function regNewSession(iv_userid){

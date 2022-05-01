@@ -2,6 +2,8 @@
 var zmDbL=require('./dbsqlite.js');
 var zmC=require('./cons.js');
 var zmUser=require('./user.js');
+var zmSession=require('./session.js');
+var zmDLock=require('./dlock.js');
 
 var ma_OpenBook=new Array();    //default book to open when user logs BK app
                                 //userid/bookid mapping data is stored here
@@ -14,31 +16,104 @@ exports.returnMem=function(iv){
 
 exports.main=async function(io){
     var rtv;
+    var lo_sesschk=zmSession.emptyObj();
+    var lo_dlockchk=zmDLock.emptyObj();
 
-    if(io.act=='get'){
+    //check session timeout
+    lo_sesschk=zmSession.checkSession(io);
+    if(lo_sesschk.remain==0) lv_msg="error, session timeout";
+
+    var lv_userid=zmSession.curUserid(lo_sesschk.token); 
+    //see comment in function zmSession.curUserid() for more info.
+    if(lv_userid==""){
+        console.log("Warning: failed to get userid from session token, using zmUser: ");
+        lv_userid=zmUser.curUserid();
+        console.log(lv_userid);
+        console.log(io);
+    }
+
+    if(io.act=='edit'){
+        var lv_pass=await checkPermission(lv_userid,io.bookid,"W");
+        if(lv_pass){
+            lo_dlockchk=zmDLock.tryEdit(io.dataid,lo_sesschk.token);
+            rtv={
+                session:lo_sesschk,
+                dlock:lo_dlockchk,
+                msg:lo_dlockchk.msg
+            };
+            if(lo_dlockchk.edit) io.act='get_edit' //continue to send latest data to frontend
+        }else{
+            lv_msg="You cannot edit this book";
+            rtv={
+                pass:lv_pass,
+                dlock:{
+                    edit:false
+                },
+                msg:lv_msg
+            };
+        }
+    }
+    if(io.act=='disp'){
+        zmDLock.unlock(io.dataid,zmSession.getSessionId(lo_sesschk.token));
+        io.act='get_disp' //continue to send latest data to frontend
+    }
+    if(io.act=='get' ||
+       io.act=='get_edit' ||
+       io.act=='get_disp' ){
         var lv_bookid=io.bookid;
-        var lv_pass=await checkPermission(io.bookid,"R");
+        var lv_pass=await checkPermission(lv_userid,io.bookid,"R");
+        var lv_locked=false;
         var lv_msg="";
 
         if(lv_pass){
 
-            setOpenBook(lv_bookid); //set the book to open next time user use book app
-            ma_BookList =  await getBookList();
-            var lo_book=getBookMa(lv_bookid);
-            var x = await zmDbL.asyncSql("SELECT * FROM BK_SHEETS where bookid='"+lv_bookid+"' ");
+            //prelock opening book, and unlock user leaving book 
+            if(io.act=="get"){
 
-            if(x.rc!=0) lv_msg=lv_msg+"get sheet error";
+                if(io.edit){
+                    lo_dlockchk=zmDLock.tryEdit(io.dataid,lo_sesschk.token);
+                    if(lo_dlockchk.edit==false){
+                        //data is locked
+                        lv_locked=true;
+                        rtv={
+                            edit:false,
+                            msg:lo_dlockchk.msg
+                        };
+                    }
+                }
+
+                if(io.unlockbook!=null && !lv_locked)
+                    zmDLock.unlock(io.unlockbook,zmSession.getSessionId(lo_sesschk.token));
+            }
+
+            if(!lv_locked){
+                setOpenBook(lv_userid,lv_bookid); //set the book to open next time user use book app
+                ma_BookList =  await getBookList(lv_userid);
+                var lo_book=getBookMa(lv_bookid);
+                var x = await zmDbL.asyncSql("SELECT * FROM BK_SHEETS where bookid='"+lv_bookid+"' ");
+
+                if(x.rc!=0) lv_msg=lv_msg+"get sheet error";
+                
+                if(io.act=='get')
+                    if(lv_msg=="") lv_msg="here's your book..."
             
-            if(lv_msg=="") lv_msg="here's your book..."
-           
-            rtv={
-                msg:lv_msg,
-                pass:lv_pass,
-                book:{
-                    title:lo_book.title,
-                    bookid:lv_bookid,
-                    openpage:lo_book.openpage,
-                    sheets:x.r
+                // if(zmSession.curUserid(lo_sesschk.token)!=zmUser.curUserid()){
+                //     console.log("you got me!!!");
+                //     console.log(zmSession.curUserid(lo_sesschk.token));
+                //     console.log(zmUser.curUserid());
+                // }
+
+                rtv={
+                    msg:lv_msg,
+                    pass:lv_pass,
+                    book:{
+                        title:lo_book.title,
+                        bookid:lv_bookid,
+                        openpage:lo_book.openpage,
+                        sheets:x.r
+                    },
+                    session:lo_sesschk,
+                    dlock:lo_dlockchk,
                 }
             }
 
@@ -55,7 +130,7 @@ exports.main=async function(io){
 
     }
     if(io.act=='getdraft'){
-        var lv_userid=zmUser.curUserid();
+        // var lv_userid=zmUser.curUserid();
         var lv_bookid=io.bookid;
         var lv_page=io.page;
         var x = await zmDbL.asyncSql("SELECT * FROM BK_DRAFT where userid='"+lv_userid+"' and bookid="+lv_bookid+" and page="+lv_page+" ");
@@ -82,14 +157,18 @@ exports.main=async function(io){
     }
     if(io.act=='getinit'){
         var lv_msg="";
-
-        ma_BookList = await getBookList();
-        var lv_userid=zmUser.curUserid();
+        
+        //init session
+        lo_sesschk=zmSession.pbeg();
+        lv_userid=zmSession.curUserid(lo_sesschk.token);
+        ma_BookList = await getBookList(lv_userid);
+        // var lv_userid=zmUser.curUserid();
         var lv_bookid=getOpenBook(lv_userid);
+        var lv_pass=await checkPermission(lv_userid,lv_bookid,"R");
         var lo_book;
         var la_sheets;
         lo_book=getBookMa(lv_bookid);
-        if(ma_BookList.length==0 && lo_book==undefined){
+        if( (ma_BookList.length==0 && lo_book==undefined) || !lv_pass){
             //build an empty book if failed to get
             //todo: use func. to return empty book, instead of code below
             lo_book={
@@ -102,7 +181,10 @@ exports.main=async function(io){
                     sideb:"n/a"
                 }]
             };
-            lv_msg="You don't have any book yet, please goto Mng page to create one.";
+            if(lo_book==undefined)
+                lv_msg="You don't have any book yet, please goto Mng page to create one.";
+            else    //no access on default opening book, guide user to select one
+                lv_msg="Please OPEN a book from the menu.";
         }else{
             //continue to get sheets:
             var x = await zmDbL.asyncSql("SELECT * FROM BK_SHEETS where bookid='"+lv_bookid+"' ");
@@ -121,9 +203,9 @@ exports.main=async function(io){
 
     }
     if(io.act=='mng_move'){
-        ma_BookList = await getBookList();
+        ma_BookList = await getBookList(lv_userid);
         var lv_msg=await moveBook(io.bookid,io.to);//"moving... "+io.to;
-        var la_booklist = await getBookList();
+        var la_booklist = ma_BookList;//await getBookList();
         if(la_booklist.length<1) lv_msg="You don't have book yet...";
         rtv={
             msg:lv_msg,
@@ -133,7 +215,7 @@ exports.main=async function(io){
         };
     }
     if(io.act=='getbooklist'){
-        var la_booklist = await getBookList();
+        var la_booklist = await getBookList(lv_userid);
         var lv_msg="Here're your books...";
         if(la_booklist.length<1) lv_msg="You don't have book yet...";
         rtv={
@@ -145,7 +227,7 @@ exports.main=async function(io){
     }
     if(io.act=='mng_getbooklist'){
         // await checkUSet();
-        ma_BookList = await getBookList();
+        ma_BookList = await getBookList(lv_userid);
         var la_booklist = ma_BookList;//await getBookList();
         var lv_msg="Here're your books...";
         if(la_booklist.length<1) lv_msg="You don't have book yet...";
@@ -158,9 +240,9 @@ exports.main=async function(io){
     }
     if(io.act=='mng_setopen'){
         var lv_msg="opening book...";
-        var lv_pass=await checkPermission(io.bookid,"R");
+        var lv_pass=await checkPermission(lv_userid,io.bookid,"R");
         if(lv_pass)
-            setOpenBook(io.bookid);
+            setOpenBook(lv_userid,io.bookid);
         else
             lv_msg="You cannot open this book";
         rtv={
@@ -171,7 +253,7 @@ exports.main=async function(io){
     }
     if(io.act=='mng_newbook'){
         var lv_msg=await newBook(io.data.title);
-        var la_booklist = await getBookList();
+        var la_booklist = await getBookList(lv_userid);
         rtv={
             msg:lv_msg,
             booklist:{
@@ -181,7 +263,7 @@ exports.main=async function(io){
     }
     if(io.act=='mng_rename'){
         var lv_msg=await renameBook(io.data.bookid,io.data.title);
-        var la_booklist = await getBookList();
+        var la_booklist = await getBookList(lv_userid);
         rtv={
             msg:lv_msg,
             booklist:{
@@ -200,7 +282,7 @@ exports.main=async function(io){
     }
     if(io.act=='mng_updatesharelist'){
         var lv_msg;
-        var lv_permission=await checkPermission(io.bookid,"O");
+        var lv_permission=await checkPermission(lv_userid,io.bookid,"O");
 
         if(!lv_permission) 
             lv_msg="You don't have such permission."
@@ -212,44 +294,54 @@ exports.main=async function(io){
         };
     }
     if(io.act=='save'){
-        var lv_pass=await checkPermission(io.data.bookid,"W");
+        var lv_pass=await checkPermission(lv_userid,io.data.bookid,"W");
         if(lv_pass){
 
-            var lv_bookid=io.data.bookid;
-            var lv_sql=buildSqlSave(io.data);
-            //console.log(lv_sql);
-    
-            if(lv_sql!=""){
-                var x = await zmDbL.asyncSqlM(lv_sql);
-                var y = await zmDbL.asyncSql("SELECT * FROM BK_MAIN where bookid='"+lv_bookid+"' ");
-                var z = await zmDbL.asyncSql("SELECT * FROM BK_USET_BK where bookid='"+lv_bookid+"' and userid='"+zmUser.curUserid()+"' ")
-                var lv_title = y.r[0].title;
-                var lv_openpage = io.data.openpage;
-                //if error, will dump here, so if ok, send new book to ui:
-                var lo_ns=await zmDbL.asyncSql("SELECT * FROM BK_SHEETS where bookid='"+lv_bookid+"' ");
-                var lv_msg="";
-    
-                //rtn error msg:
-                if(x.rc!=0) lv_msg="save error";//:"+x.e;//JSON.stringify(x.e);
-                if(lv_msg=="") lv_msg="saved"
-                rtv={
-                    msg:lv_msg,
-                    book:{
-                        title:lv_title,
-                        bookid:lv_bookid,
-                        openpage:lv_openpage,
-                        sheets:lo_ns.r
-                    }
-                };
+            if(lo_sesschk.remain>0){
+
+                var lv_bookid=io.data.bookid;
+                var lv_sql=buildSqlSave(io.data);
+                //console.log(lv_sql);
+        
+                if(lv_sql!=""){
+                    var x = await zmDbL.asyncSqlM(lv_sql);
+                    var y = await zmDbL.asyncSql("SELECT * FROM BK_MAIN where bookid='"+lv_bookid+"' ");
+                    var z = await zmDbL.asyncSql("SELECT * FROM BK_USET_BK where bookid='"+lv_bookid+"' and userid='"+zmUser.curUserid()+"' ")
+                    var lv_title = y.r[0].title;
+                    var lv_openpage = io.data.openpage;
+                    //if error, will dump here, so if ok, send new book to ui:
+                    var lo_ns=await zmDbL.asyncSql("SELECT * FROM BK_SHEETS where bookid='"+lv_bookid+"' ");
+                    var lv_msg="";
+        
+                    //rtn error msg:
+                    if(x.rc!=0) lv_msg="save error";//:"+x.e;//JSON.stringify(x.e);
+                    if(lv_msg=="") lv_msg="saved"
+                    rtv={
+                        msg:lv_msg,
+                        book:{
+                            title:lv_title,
+                            bookid:lv_bookid,
+                            openpage:lv_openpage,
+                            sheets:lo_ns.r
+                        }
+                    };
+                }else{
+                    rtv={
+                        msg:'nothing new to save...'
+                    };
+        
+                }
+        
+                await updateUSetPageStat(lv_bookid,io.data.openpage,true);//todo update openedit
+        
             }else{
+
+                lv_msg="Session timeout, you cannot save now";
                 rtv={
-                    msg:'nothing new to save...'
+                    pass:lv_pass,
+                    msg:lv_msg
                 };
-    
             }
-    
-            await updateUSetPageStat(lv_bookid,io.data.openpage,true);//todo update openedit
-    
         }else{
 
             lv_msg="You cannot save this book";
@@ -257,7 +349,6 @@ exports.main=async function(io){
                 pass:lv_pass,
                 msg:lv_msg
             };
-
         }
 
     }
@@ -286,6 +377,9 @@ exports.main=async function(io){
         }
     }
 
+    //adding session object:
+    rtv.session=lo_sesschk;
+
     return rtv;
 }
 
@@ -299,8 +393,9 @@ function getOpenBookIndex(iv_userid){
     }
     return rtv;
 }
-function setOpenBook(iv_bookid){
-    var lv_userid=zmUser.curUserid();
+function setOpenBook(iv_userid,iv_bookid){
+    // var lv_userid=zmUser.curUserid();
+    var lv_userid=iv_userid;
 
     var lv_index=getOpenBookIndex(lv_userid);
     if(lv_index<0)
@@ -327,7 +422,7 @@ function getOpenBook(iv_userid){
     return lv_bookid;
 }
 
-async function checkPermission(iv_bookid,iv_act){
+async function checkPermission(iv_userid,iv_bookid,iv_act){
     /* iv_act:
     "R" - read, open
     "W" - write, read and write
@@ -344,7 +439,8 @@ select bookid, shareto as userid, sharetype as type from bk_share where bookid =
     var lb_r=false;
     var lb_w=false;
 
-    var lv_userid=zmUser.curUserid();
+    // var lv_userid=zmUser.curUserid();
+    var lv_userid=iv_userid;
 
     var lv_sql=" \
     select bookid, userid, 'O' as type from bk_main where bookid = "+iv_bookid+" \
@@ -373,8 +469,9 @@ select bookid, shareto as userid, sharetype as type from bk_share where bookid =
     if(iv_act=="W") return lb_w;
 }
 
-async function getBookList(){
-    var lv_userid=zmUser.curUserid();
+async function getBookList(iv_userid){
+    // var lv_userid=zmUser.curUserid();
+    var lv_userid=iv_userid;
 
     lv_sql="\
 select s.bookid, s.title, \
@@ -448,7 +545,7 @@ async function getLatestedBook(){
     else return -1;
 }
 async function renameBook(iv_bookid,iv_title){
-    var lv_pass=await checkPermission(iv_bookid,"O");
+    var lv_pass=await checkPermission(zmUser.curUserid(),iv_bookid,"O");
     if(!lv_pass) return 'You cannot edit this book.';
 
     var lv_sql=buildSqlUpdateTitle(iv_bookid,iv_title);

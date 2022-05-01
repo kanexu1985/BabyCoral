@@ -18,7 +18,7 @@ exports.tryEdit=function(iv_dataid,iv_sessToken){
     else{
         if(rto.lockedby =='') {
             rto.edit=true;
-            regNewLock(iv_dataid,lv_sessid,zmUser.curUserid());
+            regNewLock(iv_dataid,lv_sessid,zmSession.checkUserBySessionId(lv_sessid));
         }else{
             rto.edit=false;
             rto.msg="Data locked by "+rto.lockedby;
@@ -28,8 +28,22 @@ exports.tryEdit=function(iv_dataid,iv_sessToken){
     return rto;
 }
 
-exports.unlock=function(iv_dataid){
+exports.unlock=function(iv_dataid,iv_sessid){
+    //check if data is owned by session first
+    var lo=null;
+    for(var i=0;i<ma_list.length;i++)
+        if(ma_list[i].dataid==iv_dataid)
+            lo=ma_list[i];
+    if(lo==null){
+        console.log("dlock.unlock: data not found, unlock failed( dataid, unlock session): "+iv_dataid+", "+iv_sessid);
+        return;
+    }
+    else if(lo.sessid!=iv_sessid){
+        console.log("dlock.unlock: data not owned by session, unlock failed( dataid / data owner session, unlock session): "+iv_dataid+" / "+lo.sessid+", "+iv_sessid);
+        return;
+    }
     delLockByDataid(iv_dataid);
+    console.log("data unlocked( dataid / owner session): "+iv_dataid+" / "+lo.sessid);
 }
 
 exports.unlockAll=function(iv_sessToken){

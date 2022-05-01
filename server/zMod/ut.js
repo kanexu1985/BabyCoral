@@ -79,3 +79,15 @@ function twoDigits(iv){
     if(iv<10) return "0"+iv;
     else return ""+iv;
 }
+
+
+
+var sharedArrayBuffer_for_sleep = new SharedArrayBuffer( 4 ) ;
+var sharedArray_for_sleep = new Int32Array( sharedArrayBuffer_for_sleep ) ;
+var sleepp = function( n ) {
+    Atomics.wait( sharedArray_for_sleep , 0 , 0 , n ) ;
+}
+
+exports.sleep=function(iv){
+    sleepp(iv);
+}

@@ -43,11 +43,11 @@ exports.readJson=function(){
     });
 }
 
-exports.setUser=function(iv_userid,iv_nicknm){
-    //only used in dev
-    m_o.userid=iv_userid;
-    m_o.nicknm=iv_nicknm;
-}
+// exports.setUser=function(iv_userid,iv_nicknm){
+//     //only used in dev
+//     m_o.userid=iv_userid;
+//     m_o.nicknm=iv_nicknm;
+// }
 exports.curUserid=function(){
     return m_o.userid;
 }
@@ -57,7 +57,7 @@ exports.curNicknm=function(){
 exports.curGroup=function(){
 
     var la=m_db.users;
-    var rta;
+    var rta=new Array();
 
     for(var i=0;i<la.length;i++){
         if(la[i].userid==m_o.userid){
@@ -121,6 +121,15 @@ exports.setByUserPwd=function(iv_userid,iv_pwd){
     m_o=lo_who;
     return rtv;
 
+}
+
+exports.verifyUser=function(iv_userid){
+    var la=m_db.users;
+    var rtv=false;
+    for(var i=0;i<la.length;i++)
+        if(la[i].userid==iv_userid)
+            rtv=true;
+    return rtv;
 }
 
 exports.genCookie=function(){

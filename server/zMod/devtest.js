@@ -1,7 +1,8 @@
 const cons = require('./cons.js');
-var zmC = require('./cons.js');
+var zmUt = require('./ut.js');
 // var zmLock=require('./lock.js');
 var zmSession=require('./session.js');
+var zmUser=require('./user.js');
 
 exports.main=function(io){
     var lo_sesschk;
@@ -28,6 +29,14 @@ exports.main=function(io){
             msg:lv_msg
         };
 
+    }
+    if(io.act=='test'){
+        console.log("devtest test:");
+        // if(zmSession.curUserid(lo_sesschk.token)!=zmUser.curUserid()){
+            // console.log("you got me!!!");
+            // console.log(zmSession.curUserid(lo_sesschk.token));
+            console.log(zmUser.curUserid());
+        // }
     }
     return rtv;
 }

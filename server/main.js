@@ -147,6 +147,15 @@ async function zProcessPost(iv){
 
     if(zmBs.accessCheckPost(io.app)){
 
+        /*======test=======*/
+        if(io.app=='test'){
+            console.log("test POST incoming:")
+            console.log(io)
+            rtv={
+                data:io,
+                msg:"received! "+JSON.stringify(io)
+            }
+        }
         /*======app=======*/
         if(io.app=='bk'){
             rtv=await zmBk.main(io);

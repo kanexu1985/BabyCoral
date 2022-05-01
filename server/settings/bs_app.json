@@ -37,6 +37,13 @@
             ]
         },
         {
+            "app": "usertool",
+            "descp":"UserTool",
+            "access": [
+                "member"
+            ]
+        },
+        {
             "app": "demo1",
             "descp":"Demo 1",
             "access": [

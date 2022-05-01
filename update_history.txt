@@ -1,5 +1,18 @@
-
-
+commit 5.2:
+Bk module:
+prevent user to send another POST if there's POST waiting server response
+will not save draft when content is empty
+server side, user speicifc time out mechanism
+adding change mark ("*") if content is changed
+add markdown display for content
+adding data lock mechanism, while a book is in editing by user A, 
+  other user cannot edit that book unless: 
+  user A exit edit mode, switch to another book, or user A's session killed by admin
+adding a UserTool app, to allow user to delete his/her own session to unlock data(for now ,only Notebook app)
+  which is locking by him/herself. 
+  Such case may happen if user refreshes the page while in EDIT mode
+fix a bug if user has no access on default opening book
+fix a bug if user's cookie is with an userid which doesn't exist
 
 commit 4.26:
 adding update_history.txt

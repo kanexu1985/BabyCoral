@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<HEAD>  
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+	<script type="text/javascript" src="../js/z.js"></script>	
+	<!-- Bootstrap core CSS -->
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
+</HEAD><BODY> 
+	
+<main role="main">
+<div class="container">
+
+	<div class="row">
+		<div class="col">
+			<h4 id="response">
+				:-)
+			</h4>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col">
+
+			<div id="buts">
+				<a class="btn btn-outline-primary btn-lg" href="../home"  role="button" onClick="bHome()">
+					/home
+				</a>
+				
+			</div>
+
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			&nbsp;
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<h1>Session</h1>
+			If you have own locking data. You can unlock them by terminating your own sessions.<br>
+			Doing so will delete all you active sessions and you'll get timeout error, but the data will be unlocked.<br>
+			<br>
+			To do so, type your user id below and click the button
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+				<input class="form-control" size="10" id="uid" placeholder="your user id" value=""> 
+		</div>
+		<div class="col-2">
+				
+		</div>
+		<div class="col">
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col">
+			<button type="button" class="btn btn-outline-primary" onClick="bChkSess()">
+				Check My Sessions
+			</button>	
+			<button type="button" class="btn btn-outline-primary" onClick="bDelSess()">
+				Delete My Sessions
+			</button>	
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<div id="sessresponse"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<div id="sesslist"></div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<div id="not_response_now"></div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<!--spare-->
+		</div>
+	</div>
+
+</div><!--container-->
+</main>
+	
+
+
+<script src="../js/jquery-3.5.1.slim.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
+
+<script type="text/javascript" src="../js/zBbcrmd5.js"></script>	
+<script type="text/javascript">
+	
+/*---------------------------------------------*/
+init();
+function init(){
+}
+/*---------------------------------------------*/
+function goto(iv_url){
+	window.location.replace(iv_url);
+}
+/*---------------------------------------------*/
+function bChkSess(){
+	getMySession();
+}
+function bDelSess(){
+	var lv_uid=document.getElementById("uid").value;
+	lv_uid=lv_uid.trim().toUpperCase();
+	if(lv_uid.trim()==""){
+		alert("user id is empty");
+		return;
+	}
+
+	clearResponse();
+	
+	var oData={
+		app:"session",
+		act:"delownsess",
+		userid:lv_uid
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend3(postData,function(oDataRt){
+		printSessResponse(":"+oDataRt.msg);
+		afterGetMySession(oDataRt.list);
+	},function(){
+		printSessResponse("get session list server error");
+	});
+
+}
+/*---------------------------------------------*/
+function getMySession(){
+	clearResponse();
+	
+	var oData={
+		app:"session",
+		act:"listsession"
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend3(postData,function(oDataRt){
+		printSessResponse(":"+oDataRt.msg);
+		afterGetMySession(oDataRt.list);
+	},function(){
+		printSessResponse("get session list server error");
+	});
+
+}
+
+function afterGetMySession(ia_list){
+	if(ia_list){
+		var lv=JSON.stringify(ia_list,null, '&nbsp;');
+		lv=lv.replace(/\n/g,"<br>")
+		document.getElementById("sesslist").innerHTML=lv;
+	}
+}
+
+function fResponse(oData){
+	printResponse(oData.msg);
+}
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+function printSessResponse(iv){
+	printResponse(iv);
+	document.getElementById("sessresponse").innerHTML=iv;
+}
+function clearResponse(){
+	printResponse("");
+}
+
+
+
+	
+
+</script>
+
+</body>
+</html>

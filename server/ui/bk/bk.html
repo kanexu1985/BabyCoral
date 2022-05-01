@@ -33,6 +33,7 @@
   </style>
   <!-- Custom styles for this template -->
   <link href="../css/bk.css" rel="stylesheet">
+  <link href="../css/bk_md.css" rel="stylesheet">
   <link href="../css/navbar-top-fixed.css" rel="stylesheet">
   <link href="../css/offcanvas.css" rel="stylesheet">
 </head>
@@ -116,6 +117,11 @@
 
 					<div class="card mb-4 shadow-sm" onclick="eClickInpA()">
 						<textarea class="card-body" style="height: 400px;"  id="taa" rows="5" onchange="eInpA(this.value)" onkeyup="eInpA(this.value)">loading...</textarea>
+
+						<div id="damd" class="card-body" style="height: 400px; overflow:auto;" >
+							<div id="content_md" class="markdown-body">@</div>
+						</div>
+
 					<div class="card-header" onclick="eClickTitleA()">
 						<h6 class="my-0 font-weight-normal">
 
@@ -197,6 +203,11 @@
 					Backside
 				</button>
 
+				<div class="btn-group" role="group" aria-label="Basic example">
+					<button type="button" class="btn btn-outline-secondary" id="butMd" onClick="bMd()">MD</button>
+					<button type="button" class="btn btn-outline-secondary" onClick="bMdHelp()">?</button>
+				</div>
+
 			</div>
 			<div class="col">
 				<!-- move -->
@@ -212,9 +223,12 @@
 		</div><!-- more buttons -->
 			
 		
-		<div class="row"><!-- 2nd msg board -->
-			<div class="col">
+		<div class="row justify-content-between"><!-- 2nd msg board -->
+			<div class="col-9">
 				<div id="response2"></div>
+			</div>
+			<div class="col-3" style="text-align: right;">
+				<div id="sessionstat" class="badge badge-secondary">...</div>
 			</div>
 		</div>
 
@@ -256,21 +270,30 @@
 
   <script src="../js/jquery-3.5.1.slim.min.js"></script>
   <script src="../js/bootstrap.bundle.min.js"></script>
+  <script src="../js/marked/marked.min.js"></script>
 
   <script>
     /* gv */
     var gv_keyShift = false;
     var gv_keyCtrl = false;
 
-    var C_CLASS_CARD_SEL = "card text-white bg-primary mb-4 shadow-sm";
-    var C_CLASS_CARD_NOR = "card mb-4 shadow-sm"
-    var C_CLASS_ITEM_SEL = "card col-12 text-white bg-primary";
-    var C_CLASS_ITEM_NOR = "card col-12"
-    var C_CLASS_BUTKEY_DOWN = "btn btn-primary ";
-    var C_CLASS_BUTKEY_UP = "btn btn-outline-secondary ";
-    var C_CLASS_BUTSAVE = "btn btn-primary btn-sm my-2 my-sm-0";
-    var C_CLASS_BUTSAVED = "btn btn-outline-secondary btn-sm my-2 my-sm-0";
-	var C_COLOR_TAG = "#007bff";
+    const C_CLASS_CARD_SEL = "card text-white bg-primary mb-4 shadow-sm";
+    const C_CLASS_CARD_NOR = "card mb-4 shadow-sm"
+    const C_CLASS_ITEM_SEL = "card col-12 text-white bg-primary";
+    const C_CLASS_ITEM_NOR = "card col-12"
+    const C_CLASS_BUTKEY_DOWN = "btn btn-primary ";
+    const C_CLASS_BUTKEY_UP = "btn btn-outline-secondary ";
+    const C_CLASS_BUTSAVE = "btn btn-primary btn-sm my-2 my-sm-0";
+    const C_CLASS_BUTSAVED = "btn btn-outline-secondary btn-sm my-2 my-sm-0";
+	const C_CLASS_LIGHT_S = "badge badge-success";
+	const C_CLASS_LIGHT_W = "badge badge-warning";
+	const C_CLASS_LIGHT_E = "badge badge-danger";
+	
+	const C_COLOR_TAG = "#007bff";
+
+	const gv_timerInterval=2000;
+	var gv_sesstok="";
+	var gb_timeoutwarned=false;
     /* function */
     /** functions that operates the View        */
 
@@ -281,6 +304,12 @@
     function fSetEditOff() {
       gv_keyShift = false;
       document.getElementById("butEdit").setAttribute("class", C_CLASS_BUTKEY_UP);
+    }
+    function fSetMdOn() {
+      document.getElementById("butMd").setAttribute("class", C_CLASS_BUTKEY_DOWN);
+    }
+    function fSetMdOff() {
+      document.getElementById("butMd").setAttribute("class", C_CLASS_BUTKEY_UP);
     }
 
     function fSetSaveOn() {
@@ -304,14 +333,92 @@
 
     
 /*---------------------------------------------*/
+function lockPost(){
+	gb_postlock=true;
+	document.getElementById("navbarDarkDropdownMenuLink").disabled = true;
+	document.getElementById("btnSave").disabled = true;
+}
+function unlockPost(){
+	gb_postlock=false;
+	document.getElementById("navbarDarkDropdownMenuLink").disabled = false;
+	if(!gb_timeoutwarned) //do not unlock SAVE button if timeout
+		document.getElementById("btnSave").disabled = false;
+}
+function checkPostLock(){ return gb_postlock;}
+const POSTLOCK_IGNORE = 0;
+const POSTLOCK_STRICT = 1;
+const POSTLOCK_SILENT = 2;
+/* POSTLOCK_
+ STRICT: always check POSTLOCK, 
+         will block action and show msg if POST is locking 
+		 gb_postlock is locked while posted and waiting for response
+ IGNORE: ignore POSTLOCK status,
+         always send post
+		 no change on gb_postlock
+ SILENT: always check POSTLOCK,
+	     will block action but NO msg if POST is locking 
+		 no change on gb_postlock
+*/
+function post_no_response(iv_att_postlock,iv_pact,io,cbf,cbferr){
+
+	if(iv_att_postlock==POSTLOCK_STRICT ||
+	   iv_att_postlock==POSTLOCK_SILENT )
+		if( checkPostLock() ){
+			if(iv_att_postlock==POSTLOCK_STRICT)
+				fAlert("Opps, please try again...");
+
+			if(iv_att_postlock==POSTLOCK_SILENT){
+				console.log("POSTLOCK_SILENT "+iv_pact)
+				console.log(io);
+			}
+			return;
+		}
+	
+	var oData=io;
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	if(iv_att_postlock==POSTLOCK_STRICT) lockPost();
+	xhrSend3(postData,function(oDataRt){
+		if(iv_att_postlock==POSTLOCK_STRICT) unlockPost();
+		// console.log(oDataRt);
+		// printResponse(":"+oDataRt.msg);
+		pap(oDataRt);
+		cbf(oDataRt);
+		// printResponse("called");
+	},cbferr);
+}
+function post(iv_pact,io,cbf){
+	printResponse("...");
+	post_no_response(POSTLOCK_STRICT,iv_pact,io,cbf,function(error){
+		unlockPost();
+		printResponse(iv_pact+" server error");
+		console.log("xhrSend3 error")
+		console.log(error);
+	});
+}
+function pap(oDataRt){
+	//process after post
+
+	//update session token
+	if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+
+	//print msg
+	if(oDataRt.msg != null) printResponse(":"+oDataRt.msg);
+
+}
+/*---------------------------------------------*/
 var gv_timer0;
 var gv_timer;
 var gv_sel_page;
-var gb_edit=false;//true=editing
+var gb_edit=false;	//true=editing
+var gb_md=true;		//true=display in markdown format
+var gb_changed=false;
 var go_book;
 var go_booklist;
-var gv_time_book_get;
-
+// var gv_time_book_get;
+var gb_postlock=false //true=locking and do not allow post
 
 function updateTextarea(iv_id){
 	if(gb_edit) document.getElementById(iv_id).disabled=false;
@@ -332,52 +439,79 @@ function getInitBook(){
 	};
 
 	//push JSON str to a value of "js":
-	var postData=encodeURIComponent(JSON.stringify(oData));
+	// var postData=encodeURIComponent(JSON.stringify(oData));
 	//send data
-	xhrSend2(postData,function(oDataRt){
-		printResponse(oDataRt.msg);
+	// xhrSend2(postData,function(oDataRt){
+	// 	printResponse(oDataRt.msg);
 
+	// 	go_booklist=oDataRt.booklist;
+
+	// 	go_book=oDataRt.book;
+
+	// 	afterGetBookList();
+	// 	afterGetBook();
+	// },function(){
+	// 	printResponse("get init server error");
+	// });
+	post("getInitBook",oData,function(oDataRt){
+		printResponse(":"+oDataRt.msg);
+		console.log("getInitBook:"+oDataRt.msg);
 		go_booklist=oDataRt.booklist;
-
 		go_book=oDataRt.book;
-
 		afterGetBookList();
 		afterGetBook();
-	},function(){
-		printResponse("get init server error");
 	});
 }
 
 
 function getBook(iv_userid,iv_book){
 	clearResponse();
-	
+
 	//prepare data to send:
 	var lv_bookid = iv_book;
+	var lv_dataid="bk_"+iv_book;
+	var lv_unlockdataid=null;
+	if(go_book!=null && gb_edit) lv_unlockdataid="bk_"+go_book.bookid;
 
 	var oData={
 		app:"bk",
 		act:"get",
-		bookid:lv_bookid
+		bookid:lv_bookid,
+		dataid:lv_dataid,
+		session:{token:gv_sesstok},
+		edit:gb_edit,
+		unlockbook:lv_unlockdataid
 	};
 
 	//clear response div
 	printResponse("");
 
 	//push JSON str to a value of "js":
-	var postData=encodeURIComponent(JSON.stringify(oData));
+	// var postData=encodeURIComponent(JSON.stringify(oData));
 	//send data
-	xhrSend2(postData,function(oDataRt){
-		printResponse(oDataRt.msg);
+	// xhrSend2(postData,function(oDataRt){
+	// 	printResponse(oDataRt.msg);
+	// 	if(!oDataRt.pass) {
+	// 		console.log("no access");
+	// 		return;
+	// 	}
+
+	// 	go_book=oDataRt.book;
+	// 	afterGetBook();
+	// },function(){
+	// 	printResponse("get book server error");
+	// });
+	post("getBook",oData,function(oDataRt){
+		printResponse(":"+oDataRt.msg);
 		if(!oDataRt.pass) {
 			console.log("no access");
 			return;
 		}
 
-		go_book=oDataRt.book;
-		afterGetBook();
-	},function(){
-		printResponse("get book server error");
+		if(oDataRt.book!=null){
+			go_book=oDataRt.book;
+			afterGetBook();
+		}
 	});
 }
 
@@ -391,18 +525,24 @@ function getDraft(){
 		app:"bk",
 		act:"getdraft",
 		bookid:go_book.bookid,
-		page:gv_sel_page
+		page:gv_sel_page,
+		session:{token:gv_sesstok}
 	};
 
 	//push JSON str to a value of "js":
-	var postData=encodeURIComponent(JSON.stringify(oData));
+	// var postData=encodeURIComponent(JSON.stringify(oData));
 	//send data
-	xhrSend2(postData,function(oDataRt){
-		printResponse(oDataRt.msg);
+	// xhrSend2(postData,function(oDataRt){
+	// 	printResponse(oDataRt.msg);
+	// 	if(oDataRt.book)
+	// 		afterGetDraft(oDataRt.book.sidea,oDataRt.book.sideb);
+	// },function(){
+	// 	printResponse("get draft server error");
+	// });
+	post("getDraft",oData,function(oDataRt){
+		printResponse(":"+oDataRt.msg);
 		if(oDataRt.book)
 			afterGetDraft(oDataRt.book.sidea,oDataRt.book.sideb);
-	},function(){
-		printResponse("get draft server error");
 	});
 
 }
@@ -411,13 +551,16 @@ function getDraft(){
 
 function afterGetBook(){
 
-	//reset time tag
-	gv_time_book_get=Date.now();
+	// //reset time tag
+	// gv_time_book_get=Date.now();
 
 	if(go_book.openpage) gv_sel_page=go_book.openpage;
 	else gv_sel_page=1;
 	//show selected page content
 	showPage(gv_sel_page);
+
+	fSetSaveOff();
+	gb_changed=false;
 }
 
 function afterGetDraft(iv_sidea,iv_sideb){
@@ -476,6 +619,7 @@ function shiftPage(co_sheet,iv_shift){
 
 function markPageChanged(io_sheet){
 	if(io_sheet.dbflag!="N") io_sheet.dbflag="C";
+	gb_changed=true;
 }
 
 function fResponse(oData){
@@ -490,6 +634,29 @@ function genTagHtml(iv){
 
 function genPageHtml(iv){
 	return '<button type="button" class="btn btn-outline-dark btn-sm" style="border:0;" disabled>'+iv+'</button>';
+}
+
+function updateMdElements(){
+	if(!gb_edit && gb_md){
+		genSideAMd();
+		document.getElementById("damd").style.display="";
+		document.getElementById("taa").style.display="none";
+	}else{
+		document.getElementById("damd").style.display="none" ;
+		document.getElementById("taa").style.display="" ;
+	}
+
+	if(gb_md) fSetMdOn();
+	else fSetMdOff();
+}
+function genSideAMd(){
+	//only need to display while in non-edit mode
+	if(gb_edit) return;
+
+	var lv=document.getElementById('taa').value;
+
+    document.getElementById('content_md').innerHTML =
+      marked.parse(lv);
 }
 
 function togglePageB(){
@@ -545,6 +712,7 @@ function showPage(iv_page){
 	document.getElementById('pagea').innerHTML=genPageHtml(lv_pa);
 	document.getElementById('pageb').innerHTML=genPageHtml(lv_pb);
 	document.getElementById('input_title').value=lv_ta;
+	if(gb_md) genSideAMd();	//render markdown content if switch is on
 	//when click from page list, need to set gv_sel_page:
 	gv_sel_page=iv_page;
 	printPageNum();//refresh page num to show sel mark []
@@ -561,6 +729,8 @@ function printPageNum(){
 	//var lv_paget='</button>';
 	var lv_pageh='';
 	var lv_paget='';
+	var lv_change_mark='';
+	var lv_changed=false;
 	var p;
 
 	//book title
@@ -569,18 +739,27 @@ function printPageNum(){
 	//page list
 	for(var i=0;i<go_book.sheets.length;i++){
 		p=i+1;
-		lv_segTag=go_book.sheets[findPageIndex(p)].title;
+		var lo_sheet=go_book.sheets[findPageIndex(p)];
+		// lv_segTag=go_book.sheets[findPageIndex(p)].title;
+		lv_segTag=lo_sheet.title;
 		lv_segTag=genTagHtml(lv_segTag);
+
+		if(lo_sheet.dbflag=="N")      {lv_change_mark = "!"; lv_changed=true;}
+		else if(lo_sheet.dbflag=="C") {lv_change_mark = "*"; lv_changed=true;}
+		else lv_change_mark = ""
 		
-		lv_segCon=getPreviewLine(go_book.sheets[findPageIndex(p)].sidea);
+		// lv_segCon=getPreviewLine(go_book.sheets[findPageIndex(p)].sidea);
+		lv_segCon=getPreviewLine(lo_sheet.sidea);
 		if(p==gv_sel_page)	//curr page/side a
-			lv_seg="==>&nbsp;<a href=# onClick='showPage("+p+")'>"+lv_pageh+p+lv_paget+"</a>&nbsp;";
+			lv_seg="==>&nbsp;<a href=# onClick='showPage("+p+")'>"+lv_pageh+p+lv_change_mark+lv_paget+"</a>&nbsp;";
 		else if(p==gv_sel_page-1)	//prev page/side b
-			lv_seg="-->&nbsp;<a href=# onClick='showPage("+p+")'>"+lv_pageh+p+lv_paget+"</a>&nbsp;";
+			lv_seg="-->&nbsp;<a href=# onClick='showPage("+p+")'>"+lv_pageh+p+lv_change_mark+lv_paget+"</a>&nbsp;";
 		else	//non selected page
-			lv_seg="...&nbsp;<a href=# onClick='showPage("+p+")'>"+lv_pageh+p+lv_paget+"</a>&nbsp;";
+			lv_seg="...&nbsp;<a href=# onClick='showPage("+p+")'>"+lv_pageh+p+lv_change_mark+lv_paget+"</a>&nbsp;";
 		lv=lv+lv_seg+lv_segTag+"&nbsp;"+lv_segCon+"<br>";
 	}
+
+	if(lv_changed) lv_title=lv_title+"*";
 
 	//print:
 	document.getElementById("pagelist").innerHTML=lv_title+"<br>"+lv;
@@ -617,6 +796,13 @@ function clearResponse(){
 function saveDraft(){
 	if(go_book==undefined || go_book==null)
 		return;
+
+	var lv_a=document.getElementById('taa').value;
+	var lv_b=document.getElementById('tab').value;
+
+	if(lv_a.trim()=="" && lv_b.trim()=="")
+		return; //empty content, draft not saving...
+
 	//for now, only save side A
 	printResponse("saving draft...");
 
@@ -627,34 +813,80 @@ function saveDraft(){
 		data:{
 			bookid:go_book.bookid,
 			page:gv_sel_page,
-			sidea:document.getElementById('taa').value,//todo base64 encode
-			sideb:document.getElementById('tab').value//todo base64 encode
-		}
+			// sidea:document.getElementById('taa').value,//todo base64 encode
+			// sideb:document.getElementById('tab').value//todo base64 encode
+			sidea:lv_a,//todo base64 encode
+			sideb:lv_b//todo base64 encode
+		},
+		session:{token:gv_sesstok}
 	};
 
 	//push JSON str to a value of "js":
-	var postData=encodeURIComponent(JSON.stringify(oData));
+	// var postData=encodeURIComponent(JSON.stringify(oData));
 	//send data
-	xhrSend2(postData,function(oDataRt){
-		printResponse(oDataRt.msg);
-	},function(){
-		printResponse("draft saving server error");
+	// xhrSend2(postData,function(oDataRt){
+	// 	printResponse(oDataRt.msg);
+	// },function(){
+	// 	printResponse("draft saving server error");
+	// });
+	post("saveDraft",oData,function(oDataRt){
+		printResponse(":"+oDataRt.msg);
 	});
 
 }
     /******************************/
 function bEd(){
-	if(gb_edit){
-		gb_edit=false;
-		fSetEditOff();
-		updateTextarea("tab");
-		updateTextarea("taa");
-	}else{
-		gb_edit=true;
-		fSetEditOn();
-		updateTextarea("tab");
-		updateTextarea("taa");
+	//block action if content has changed
+	if(gb_edit && gb_changed){
+		var lv_but='<button class="btn btn-primary btn-sm" type="button" onClick="bEdctn()" data-dismiss="modal">CONTINUE WITHOUT SAVE</button>';
+		var lv_msg=' \
+Content changed, please:<br>\
+Click SAVE to save, or<br>\
+Click '+lv_but+' to cancel your change and back to display mode';
+		fAlert(lv_msg);
+		return;
 	}
+	fEdit();
+}
+function fEdit(){
+	var lv_act;
+	var lv_dataid="bk_"+go_book.bookid;
+
+	if(gb_edit) lv_act='disp';
+	else lv_act = 'edit';
+
+	post("bEd",{
+		app:"bk",
+		act:lv_act,
+		bookid:go_book.bookid,
+		dataid:lv_dataid,
+		session:{token:gv_sesstok}
+	},function(oDataRt){
+		console.log(oDataRt);
+		gb_edit=oDataRt.dlock.edit;
+		
+		if(gb_edit){
+			fSetEditOn();
+		}else{
+			fSetEditOff();
+		}
+		updateTextarea("tab");
+		updateTextarea("taa");
+		updateMdElements();
+
+		if(oDataRt.book!=null) {
+			go_book=oDataRt.book;
+			fSetSaveOff();
+			gb_changed=false;
+		}
+		showPage(gv_sel_page); //re-render markdown content
+	});
+
+
+}
+function bEdctn(){
+	if(gb_edit) fEdit();
+	else alert("bEdctn error"); //should never happen
 }
 
 function bGetDraft(){
@@ -719,6 +951,97 @@ function bNew(){
 
 // }
 
+function bMd(){
+	if(gb_md){
+		gb_md=false;
+	}else{
+		gb_md=true;
+	}
+	updateMdElements();
+}
+function bMdHelp(){
+	var lv = "\
+Enable [MD](Markdown) to display content in Markdown style while not in EDIT mode.<br>\
+<br>\
+Check below for supported Markdown syntax:<br>\
+<br>\
+### Heading<br>\
+<br>\
+# H1<br>\
+## H2<br>\
+### H3<br>\
+<br>\
+### Bold<br>\
+<br>\
+**bold text**<br>\
+<br>\
+### Italic<br>\
+<br>\
+*italicized text*<br>\
+<br>\
+### Blockquote<br>\
+<br>\
+> blockquote<br>\
+<br>\
+### Ordered List<br>\
+<br>\
+1. First item<br>\
+2. Second item<br>\
+3. Third item<br>\
+<br>\
+### Unordered List<br>\
+<br>\
+- First item<br>\
+- Second item<br>\
+- Third item<br>\
+<br>\
+### Code<br>\
+<br>\
+`code`<br>\
+<br>\
+### Horizontal Rule<br>\
+<br>\
+---<br>\
+<br>\
+### Link<br>\
+<br>\
+[Markdown Guide](https://www.markdownguide.org)<br>\
+<br>\
+### Image<br>\
+<br>\
+![alt text](https://www.markdownguide.org/assets/images/tux.png)<br>\
+<br>\
+### Table<br>\
+<br>\
+| Syntax | Description |<br>\
+| ----------- | ----------- |<br>\
+| Header | Title |<br>\
+| Paragraph | Text |<br>\
+<br>\
+### Fenced Code Block<br>\
+<br>\
+```<br>\
+{<br>\
+  \"firstName\": \"John\",<br>\
+  \"lastName\": \"Smith\",<br>\
+  \"age\": 25<br>\
+}<br>\
+```<br>\
+<br>\
+### Strikethrough<br>\
+<br>\
+~~The world is flat.~~<br>\
+<br>\
+### Task List<br>\
+<br>\
+- [x] Write the press release<br>\
+- [ ] Update the website<br>\
+- [ ] Contact the media<br>\
+"
+
+	fAlert(lv);
+}
+
 function bQTag(){
 	document.getElementById("input_title").value="^_^";
 	eInpTitle();
@@ -734,25 +1057,37 @@ function bSave(){
 	var oData={
 		app:"bk",
 		act:"save",
-		data:go_book
+		data:go_book,
+		session:{token:gv_sesstok}
 	};
 
 	//push JSON str to a value of "js":
-	var postData=encodeURIComponent(JSON.stringify(oData));
+	// var postData=encodeURIComponent(JSON.stringify(oData));
 	//send data
-	xhrSend2(postData,function(oDataRt){
-		printResponse(oDataRt.msg);
+	// xhrSend2(postData,function(oDataRt){
+	// 	printResponse(oDataRt.msg);
+
+	// 	if(oDataRt.book){
+	// 		//update with new db rtn book:
+	// 		go_book=oDataRt.book;
+	// 		afterGetBook();
+	// 		clearTimeout(gv_timer);//do not save draft after clicking SAVE
+	// 		fSetSaveOff();
+	// 	}
+		
+	// },function(){
+	// 	printResponse("save server error");
+	// });
+	post("bSave",oData,function(oDataRt){
+		printResponse(":"+oDataRt.msg);
 
 		if(oDataRt.book){
 			//update with new db rtn book:
 			go_book=oDataRt.book;
 			afterGetBook();
 			clearTimeout(gv_timer);//do not save draft after clicking SAVE
-			fSetSaveOff();
+			// fSetSaveOff();
 		}
-		
-	},function(){
-		printResponse("save server error");
 	});
 }
 
@@ -769,6 +1104,30 @@ function bTest(){
 	// 	lv_msg=lv_msg+"You can still edit and it will automatically be saved as draft, then refresh the page to retrieve the SAVE button and retrieve the draft to save the content.";
 	// 	document.getElementById("btnSave").disabled = true;
 	// 	fAlert(lv_msg);
+
+	// console.log("POSTing inittest:")
+	// post_no_response(true,"inittest",{
+	// 	app:'test',
+	// 	act:'get',
+	// 	session:{token:"aa"}
+	// },function(oDataRt){
+	// 	console.log("inittest")
+	// 	console.log(oDataRt.msg)
+	// });
+
+	// console.log("POSTing inittest2:")
+	// post_no_response(true,"inittest2",{
+	// 	app:'test',
+	// 	act:'get',
+	// 	session:{token:"bb"}
+	// },function(oDataRt){
+	// 	console.log("inittest2")
+	// 	console.log(oDataRt.msg)
+	// });
+
+	// saveDraft();
+
+
 }
 
 function bPrev(){
@@ -794,6 +1153,10 @@ function bNext(){
 }
 
 function bMovePrev(){
+	if(!gb_edit){
+		fAlert("Not in edit mode!")
+		return;
+	}
 	clearResponse();
 	
 	if(gv_sel_page==1){
@@ -816,6 +1179,10 @@ function bMovePrev(){
 }
 
 function bMoveNext(){
+	if(!gb_edit){
+		fAlert("Not in edit mode!")
+		return;
+	}
 	clearResponse();
 
 	if(gv_sel_page>=lastPage()){
@@ -838,6 +1205,10 @@ function bMoveNext(){
 }
 
 function bMoveBfr(){
+	if(!gb_edit){
+		fAlert("Not in edit mode!")
+		return;
+	}
 	clearResponse();
 
 	var lv_bfrP=Number(document.getElementById("input_movebfr").value);
@@ -890,20 +1261,21 @@ function bMoveBfr(){
 
     /* event */
 
-function eTimer0(){
-	var lv=(Date.now()-gv_time_book_get)/1000;
-	var lv_timeout=60*5; //5min
-	// lv_timeout=5;//for dev only
-	// printResponse(lv);
-	if(lv>=lv_timeout && document.getElementById("btnSave").disabled == false){
-		//lock SAVE button & alert:
-		var lv_msg="Session timeout, SAVE button now disabled. ";
-		lv_msg=lv_msg+"You can still edit and it will automatically be saved as draft, ";
-		lv_msg=lv_msg+"then refresh the page to reactivate the SAVE button and retrieve the draft to save the content.";
-		fAlert(lv_msg);
-		document.getElementById("btnSave").disabled = true;
-	}
-}
+// function eTimer0(){
+// 	var lv=(Date.now()-gv_time_book_get)/1000;
+// 	var lv_timeout=60*5; //5min
+// 	// lv_timeout=5;//for dev only
+// 	// printResponse(lv);
+// 	if(lv>=lv_timeout && document.getElementById("btnSave").disabled == false){
+// 		//lock SAVE button & alert:
+// 		var lv_msg="Session timeout, SAVE button now disabled. ";
+// 		lv_msg=lv_msg+"You can still edit and it will automatically be saved as draft, ";
+// 		lv_msg=lv_msg+"then refresh the page to reactivate the SAVE button and retrieve the draft to save the content.";
+// 		fAlert(lv_msg);
+// 		document.getElementById("btnSave").disabled = true;
+// 	}
+// }
+// old local timeout timer, not used now
 
 function eClickInpA(){
 	//if(!gb_edit) bNext();
@@ -933,6 +1305,7 @@ function eInpB(){
 	lo.sideb=document.getElementById('tab').value;
 
 	markPageChanged(lo);
+	showPage(gv_sel_page); //reprint page to show change mark ("*")
 }
 function eInpA(){
 	clearResponse();
@@ -942,6 +1315,7 @@ function eInpA(){
 	lo.sidea=document.getElementById('taa').value;//todo base64 encode
 
 	markPageChanged(lo);
+	showPage(gv_sel_page); //reprint page to show change mark ("*")
 	fSetSaveOn();//illuminate save button
 
 	clearTimeout(gv_timer);
@@ -964,22 +1338,92 @@ function eInpTitle(){
 
 
 /*---------------------------------------------*/
+/* session functions */
+function printSessStat(iv_class,iv){
+	document.getElementById("sessionstat").innerHTML=iv;
+	document.getElementById("sessionstat").setAttribute("class", iv_class);
+}
+// function sessionInit(){
+
+// 	post_no_response(true,"sessionInit",{
+// 		app:'session',
+// 		act:'pbeg'
+// 	},function(oDataRt){
+// 		console.log(oDataRt);
+// 		if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+// 		console.log("sessionInit:"+oDataRt.msg);
+// 	});
+
+// }
+function sessionTimer(){
+
+	post_no_response(POSTLOCK_SILENT,"sessionTimer",{
+		app:'session',
+		act:'achk',
+		// sesstok:gv_sesstok
+		session:{token:gv_sesstok}
+	},function(oDataRt){
+		// console.log(oDataRt);
+		if(oDataRt.session.token) gv_sesstok=oDataRt.session.token;
+		//msg if timeout
+		if(oDataRt.session.remain==0 && !gb_timeoutwarned){
+			var lv_msg="Session timeout, SAVE button now disabled. ";
+			lv_msg=lv_msg+"You can still edit and it will automatically be saved as draft, then refresh the page to retrieve the SAVE button and retrieve the draft to save the content.";
+			fAlert(lv_msg);
+
+			document.getElementById("btnSave").disabled = true;	//disable SAVE button
+
+			gb_timeoutwarned=true;
+		}
+		//chk timeout soon
+		sesstionChkTimeoutStat(oDataRt.session.remain);
+
+		// printResponse(":"+oDataRt.msg);
+	},function(error){
+		//possible network disconnects
+		printSessStat(C_CLASS_LIGHT_E,"offline");
+		printResponse(" server error");
+		console.log("sessionTimer xhrSend3 error")
+		console.log(error);
+	
+	});
+
+}
+function sesstionChkTimeoutStat(iv_remain){
+	var lv_threshold=120000; 						//2 mins
+	
+	var lv_timerInterval=gv_timerInterval;
+
+	if(iv_remain > lv_threshold)
+		printSessStat(C_CLASS_LIGHT_S,"online");
+
+	if(iv_remain<=lv_threshold && 
+	   iv_remain > lv_timerInterval) 
+		printSessStat(C_CLASS_LIGHT_W,""+parseInt(iv_remain/1000)+"s");
+
+	if(iv_remain <= 0)
+		printSessStat(C_CLASS_LIGHT_E,"timeout");
+}
+/*---------------------------------------------*/
 function init(){
 	printResponse("selecta book to start");
 
 	hidePageB();
 	updateTextarea("tab");
 	updateTextarea("taa");
+	updateMdElements();
 
 	getInitBook();
 
-	bEd();//click Edit once to enable edit mode
+	// bEd();//click Edit once to enable edit mode
 	hideMoreButtons();//hide more button bar
 
+	sessionTimer();
 	//start timer0
 	gv_timer0 = setInterval(function() {
-		eTimer0();
-  	}, 1000);
+		// eTimer0();
+		sessionTimer();
+  	}, gv_timerInterval);
 
 }
 init();

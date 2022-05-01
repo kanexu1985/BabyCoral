@@ -68,6 +68,30 @@ function xhrSend2(iv,cbf,cbferr){
 	
 }
 
+function xhrSend3(iv,cbf,cbferr){
+
+	var lo_xmlhttp = new XMLHttpRequest();
+	var lv_url = ""; //(url info not used in the POST func. on server side)
+	
+	lo_xmlhttp.onreadystatechange = function() {
+	  if (lo_xmlhttp.readyState == 4 && lo_xmlhttp.status == 200) {
+		//rtn in JSON:
+		var lo_oData=JSON.parse(lo_xmlhttp.responseText);	
+		cbf(lo_oData);
+	  }else{
+		if (lo_xmlhttp.readyState == 4) 
+			cbferr();
+	  }
+	};
+
+	lo_xmlhttp.addEventListener('error',cbferr)
+
+	lo_xmlhttp.open("POST", lv_url, true);
+	lo_xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+	lo_xmlhttp.send(iv);
+		
+}
+
 
 /************************************/
 /* http post call back function  */

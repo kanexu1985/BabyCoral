@@ -674,8 +674,8 @@ function updateMdElements(){
 	}
 }
 function genSideAMd(){
-	//only need to display while in non-edit mode
-	if(gb_edit) return;
+	// //only need to display while in non-edit mode
+	// if(gb_edit) return;
 
 	var lv=document.getElementById('taa').value;
 
@@ -736,10 +736,11 @@ function showPage(iv_page){
 	document.getElementById('pagea').innerHTML=genPageHtml(lv_pa);
 	document.getElementById('pageb').innerHTML=genPageHtml(lv_pb);
 	document.getElementById('input_title').value=lv_ta;
-	if(gb_md) genSideAMd();	//render markdown content if switch is on
+	// if(gb_md) genSideAMd();	//render markdown content if switch is on
+	updateMdElements();	//render markdown content
 	//when click from page list, need to set gv_sel_page:
 	gv_sel_page=iv_page;
-	printPageNum();//refresh page num to show sel mark []
+	printPageNum();		//refresh page num to show sel mark []
 }
 
 
@@ -896,7 +897,7 @@ function fEdit(){
 		}
 		updateTextarea("tab");
 		updateTextarea("taa");
-		updateMdElements();
+		// updateMdElements();
 
 		if(oDataRt.book!=null) {
 			go_book=oDataRt.book;
@@ -1449,7 +1450,7 @@ function init(){
 	hidePageB();
 	updateTextarea("tab");
 	updateTextarea("taa");
-	updateMdElements();
+	// updateMdElements();
 
 	getInitBook();
 

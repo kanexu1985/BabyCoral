@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<HEAD>  
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+	<script type="text/javascript" src="../js/z.js"></script>	
+	<!-- Bootstrap core CSS -->
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/bk_md.css" rel="stylesheet">
+</HEAD><BODY> 
+	
+<main role="main">
+<div class="container">
+
+	<div class="row">
+		<div class="col">
+			<a class="btn btn-outline-primary" role="button" href="../home">
+				/home
+			</a>
+			<a class="btn btn-outline-primary" role="button" onClick="bRefresh()">
+				Refresh
+			</a>
+			<a class="btn btn-outline-primary" role="button" onClick="bClear()">
+				Clear
+			</a>
+			<a class="btn btn-outline-primary" role="button" onClick="bReset()">
+				Reset
+			</a>
+		</div>
+	</div>
+
+	
+
+	<div class="row" id="v">
+		<div class="col-lg-6">
+			<div id="md" class="markdown-body"></div>
+		</div>
+		<div class="col-lg-6">
+			<textarea class="form-control" id="text1" rows="30" onchange="bRefresh()" onkeyup="bRefresh()"></textarea>
+		</div>
+	</div>
+
+
+</div><!--container-->
+</main>
+	
+
+
+<script src="../js/jquery-3.5.1.slim.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
+<script src="../js/marked/marked.min.js"></script>
+
+<script type="text/javascript" src="../js/zBbcrmd5.js"></script>	
+<script type="text/javascript">
+	
+/*---------------------------------------------*/
+function bRefresh(){
+	var lv=document.getElementById("text1").value;
+    document.getElementById("md").innerHTML = marked.parse(lv);
+}
+
+function bClear(){
+	document.getElementById("text1").value="";
+	bRefresh();
+}
+function bReset(){
+	init();
+}
+/*---------------------------------------------*/
+function init(){
+	var lv = "Check below for supported Markdown syntax:\n\
+\n\
+### Heading\n\
+\n\
+# H1\n\
+## H2\n\
+### H3\n\
+\n\
+### Bold\n\
+\n\
+**bold text**\n\
+\n\
+### Italic\n\
+\n\
+*italicized text*\n\
+\n\
+### Blockquote\n\
+\n\
+> blockquote\n\
+\n\
+### Ordered List\n\
+\n\
+1. First item\n\
+2. Second item\n\
+3. Third item\n\
+\n\
+### Unordered List\n\
+\n\
+- First item\n\
+- Second item\n\
+- Third item\n\
+\n\
+### Code\n\
+\n\
+`code`\n\
+\n\
+### Horizontal Rule\n\
+\n\
+---\n\
+\n\
+### Link\n\
+\n\
+[Markdown Guide](https://www.markdownguide.org)\n\
+\n\
+### Image\n\
+\n\
+![alt text](https://www.markdownguide.org/assets/images/tux.png)\n\
+\n\
+### Table\n\
+\n\
+| Syntax | Description |\n\
+| ----------- | ----------- |\n\
+| Header | Title |\n\
+| Paragraph | Text |\n\
+\n\
+### Fenced Code Block\n\
+\n\
+```\n\
+{\n\
+  \"firstName\": \"John\",\n\
+  \"lastName\": \"Smith\",\n\
+  \"age\": 25\n\
+}\n\
+```\n\
+\n\
+### Strikethrough\n\
+\n\
+~~The world is flat.~~\n\
+\n\
+### Task List\n\
+\n\
+- [x] Write the press release\n\
+- [ ] Update the website\n\
+- [ ] Contact the media\n\
+"
+	document.getElementById("text1").value=lv;
+	bRefresh();
+}
+/*---------------------------------------------*/
+init();
+
+	
+
+</script>
+
+</body>
+</html>

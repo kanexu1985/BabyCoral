@@ -126,28 +126,39 @@
 						<h6 class="my-0 font-weight-normal">
 
 							<div class="row justify-content-around">
-								<div class="d-flex" style="text-align: right; vertical-align:text-bottom;">
+								<div class="col">
+									<div class="d-flex" style="text-align: right; vertical-align:text-bottom;">
 
-									<div class="d-inline">
-										<button  onClick="bPrev()" type="button" class="btn btn-outline-secondary btn-sm">
-										&lt;
-										</button>
+										<div class="d-inline">
+											<button  onClick="bPrev()" type="button" class="btn btn-outline-secondary btn-sm">
+											&lt;
+											</button>
+										</div>
+										
+										<div id="pagea" class="d-inline">
+											--
+										</div>
+	
+										<div class="d-inline">
+											<button  onClick="bNext()" type="button" class="btn btn-outline-secondary btn-sm">
+											&gt;
+											</button>
+										</div>
+	
 									</div>
-									
-									<div id="pagea" class="d-inline">
-										--
-									</div>
-
-									<div class="d-inline">
-										<button  onClick="bNext()" type="button" class="btn btn-outline-secondary btn-sm">
-										&gt;
-										</button>
-									</div>
-
 								</div>
-								<div id="titlea" class="col-8">
-								-
+								<div class="col">
+									<div id="titlea" class="col-8">
+										-
+									</div>
 								</div>
+								<div class="col">
+									<div class="btn-group" role="group" >
+										<button type="button" class="btn btn-outline-secondary btn-sm" id="butMd" onClick="bMd()">MD</button>
+										<button type="button" class="btn btn-outline-secondary btn-sm" onClick="bMdHelp()">?</button>
+									</div>
+								</div>
+
 							</div>
 						</h6>
 					</div>
@@ -202,12 +213,6 @@
 				<button onClick="bTogglePageB()" type="button" class="btn btn-outline-secondary ">
 					Backside
 				</button>
-
-				<div class="btn-group" role="group" aria-label="Basic example">
-					<button type="button" class="btn btn-outline-secondary" id="butMd" onClick="bMd()">MD</button>
-					<button type="button" class="btn btn-outline-secondary" onClick="bMdHelp()">?</button>
-				</div>
-
 			</div>
 			<div class="col">
 				<!-- move -->
@@ -285,6 +290,12 @@
     const C_CLASS_BUTKEY_UP = "btn btn-outline-secondary ";
     const C_CLASS_BUTSAVE = "btn btn-primary btn-sm my-2 my-sm-0";
     const C_CLASS_BUTSAVED = "btn btn-outline-secondary btn-sm my-2 my-sm-0";
+    
+	const C_CLASS_BUTMEON = "btn btn-primary btn-sm";
+    const C_CLASS_BUTMEOFF = "btn btn-secondary btn-sm my-2 my-sm-0";
+    const C_CLASS_BUTMDON = "btn btn-outline-primary btn-sm";
+    const C_CLASS_BUTMDOFF = "btn btn-outline-secondary btn-sm my-2 my-sm-0";
+	
 	const C_CLASS_LIGHT_S = "badge badge-success";
 	const C_CLASS_LIGHT_W = "badge badge-warning";
 	const C_CLASS_LIGHT_E = "badge badge-danger";
@@ -305,11 +316,18 @@
       gv_keyShift = false;
       document.getElementById("butEdit").setAttribute("class", C_CLASS_BUTKEY_UP);
     }
-    function fSetMdOn() {
-      document.getElementById("butMd").setAttribute("class", C_CLASS_BUTKEY_DOWN);
+
+    function fSetMdEditOn() {
+      document.getElementById("butMd").setAttribute("class", C_CLASS_BUTMEON);
     }
-    function fSetMdOff() {
-      document.getElementById("butMd").setAttribute("class", C_CLASS_BUTKEY_UP);
+    function fSetMdEditOff() {
+      document.getElementById("butMd").setAttribute("class", C_CLASS_BUTMEOFF);
+    }
+    function fSetMdDispOn() {
+      document.getElementById("butMd").setAttribute("class", C_CLASS_BUTMDON);
+    }
+    function fSetMdDispOff() {
+      document.getElementById("butMd").setAttribute("class", C_CLASS_BUTMDOFF);
     }
 
     function fSetSaveOn() {
@@ -413,7 +431,8 @@ var gv_timer0;
 var gv_timer;
 var gv_sel_page;
 var gb_edit=false;	//true=editing
-var gb_md=true;		//true=display in markdown format
+var gb_md=true;		//true=display in markdown format while display mode
+var gb_me=false;	//true=display in markdown format while edit mode
 var gb_changed=false;
 var go_book;
 var go_booklist;
@@ -637,7 +656,7 @@ function genPageHtml(iv){
 }
 
 function updateMdElements(){
-	if(!gb_edit && gb_md){
+	if( (!gb_edit && gb_md) || (gb_edit && gb_me) ){
 		genSideAMd();
 		document.getElementById("damd").style.display="";
 		document.getElementById("taa").style.display="none";
@@ -646,8 +665,13 @@ function updateMdElements(){
 		document.getElementById("taa").style.display="" ;
 	}
 
-	if(gb_md) fSetMdOn();
-	else fSetMdOff();
+	if(gb_edit){
+		if(gb_me) fSetMdEditOn();
+		else fSetMdEditOff();
+	}else{
+		if(gb_md) fSetMdDispOn();
+		else fSetMdDispOff();
+	}
 }
 function genSideAMd(){
 	//only need to display while in non-edit mode
@@ -952,16 +976,30 @@ function bNew(){
 // }
 
 function bMd(){
-	if(gb_md){
-		gb_md=false;
+	if(gb_edit){
+		if(gb_me){
+			gb_me=false;
+		}else{
+			gb_me=true;
+		}
 	}else{
-		gb_md=true;
+		if(gb_md){
+			gb_md=false;
+		}else{
+			gb_md=true;
+		}
 	}
 	updateMdElements();
 }
 function bMdHelp(){
-	var lv = "\
-Enable [MD](Markdown) to display content in Markdown style while not in EDIT mode.<br>\
+	var lv = "Use [MD] button to switch Markdown style:<br>\
+<button type=\"button\" class=\""+C_CLASS_BUTMDOFF+"\">MD</button> -- Source text, not editing<br>\
+<button type=\"button\" class=\""+C_CLASS_BUTMDON+"\">MD</button> --  Markdown style, not editing<br>\
+<br>\
+<button type=\"button\" class=\""+C_CLASS_BUTMEOFF+"\">MD</button> -- Source text, editing<br>\
+<button type=\"button\" class=\""+C_CLASS_BUTMEON+"\">MD</button> -- Markdown style, editing (you cannot edit but get a preview)<br>\
+<br>\
+Check <a href=\"./md.html\" target=\"_blank\">this page</a> to play around the Markdown text<br>\
 <br>\
 Check below for supported Markdown syntax:<br>\
 <br>\

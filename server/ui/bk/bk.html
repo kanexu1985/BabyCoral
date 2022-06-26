@@ -116,7 +116,7 @@
 					</div>
 
 					<div class="card mb-4 shadow-sm" onclick="eClickInpA()">
-						<textarea class="card-body" style="height: 400px;"  id="taa" rows="5" onchange="eInpA(this.value)" onkeyup="eInpA(this.value)">loading...</textarea>
+						<textarea class="ztextarea card-body" style="height: 400px;"  id="taa" rows="5" onchange="eInpA(this.value)" onkeyup="eInpA(this.value)">loading...</textarea>
 
 						<div id="damd" class="card-body" style="height: 400px; overflow:auto;" >
 							<div id="content_md" class="markdown-body">@</div>
@@ -173,22 +173,25 @@
 			<div class="col">
 				<div class="d-flex">
 
-					<button id="btnSave" class="btn btn-outline-secondary " type="button" onClick="bSave()">
-						SAVE
-					</button>
-					&nbsp;
 					<button onClick="bNew()" type="button" class="btn btn-outline-secondary ">
 						NEW
+					</button>
+					&nbsp;
+
+					<button id="butEdit" onClick="bEd()" type="button" class="btn btn-outline-secondary ">
+						EDIT
+					</button>
+					&nbsp;
+
+					<button id="btnSave" class="btn btn-outline-secondary " type="button" onClick="bSave()">
+						SAVE
 					</button>
 					&nbsp;
 
 					<!--button id="btnADate" class="btn btn-outline-secondary btn-sm" type="button" onClick="bAdate()">+Date</button>
 					&nbsp;&nbsp;&nbsp;
 					-->
-
-					<button id="butEdit" onClick="bEd()" type="button" class="btn btn-outline-secondary ">
-						EDIT
-					</button>
+					
 					<input id="input_title" type="text" class="form-control" placeholder="Tag..." onChange="eInpTitle()" >
 				
 					<button id="butMore" onClick="bMore()" type="button" class="btn btn-outline-secondary ">
@@ -200,18 +203,31 @@
 
 		<div id="morebuttons" class="row"><!-- more buttons -->
 			<div class="col-md-6">
-				<button class="btn btn-outline-secondary" type="button" onClick="bQTag()" >QTag</button>
+				<button class="btn btn-outline-secondary btn-sm" type="button" onClick="bQTag()" >QTag</button>
 
-				<button  onClick="bTest()" type="button" class="btn btn-outline-secondary ">
+				<button  onClick="bTest()" type="button" class="btn btn-outline-secondary btn-sm " hidden="hidden">
 					TEST
 				</button>
 
-				<button onClick="bGetDraft()" type="button" class="btn btn-outline-secondary ">
+				<button onClick="bGetDraft()" type="button" class="btn btn-outline-secondary btn-sm ">
 					Get Draft
 				</button>
 
-				<button onClick="bTogglePageB()" type="button" class="btn btn-outline-secondary ">
+				<button onClick="bTogglePageB()" type="button" class="btn btn-outline-secondary btn-sm ">
 					Backside
+				</button>
+
+				<div class="btn-group" role="group"">
+					<button onClick="bTabSel()" type="button" class="btn btn-outline-secondary btn-sm ">
+						TabSel
+					</button>
+					<button onClick="bTabFmt()" type="button" class="btn btn-outline-secondary btn-sm ">
+						Fmt
+					</button>
+				</div>
+
+				<button id="btnWrap" onClick="bWrap()" type="button" class="btn btn-primary btn-sm">
+					Wrap
 				</button>
 			</div>
 			<div class="col">
@@ -230,7 +246,8 @@
 		
 		<div class="row justify-content-between"><!-- 2nd msg board -->
 			<div class="col-9">
-				<div id="response2"></div>
+				<div id="response2" hidden="hidden"></div>
+				<div id="message">...</div>
 			</div>
 			<div class="col-3" style="text-align: right;">
 				<div id="sessionstat" class="badge badge-secondary">...</div>
@@ -276,6 +293,9 @@
   <script src="../js/jquery-3.5.1.slim.min.js"></script>
   <script src="../js/bootstrap.bundle.min.js"></script>
   <script src="../js/marked/marked.min.js"></script>
+  <script src="../js/z.js"></script>
+  <script src="../js/MarkdownTableFormatter.js"></script>
+  <script src="../js/zMdTab.js"></script>
 
   <script>
     /* gv */
@@ -288,13 +308,15 @@
     const C_CLASS_ITEM_NOR = "card col-12"
     const C_CLASS_BUTKEY_DOWN = "btn btn-primary ";
     const C_CLASS_BUTKEY_UP = "btn btn-outline-secondary ";
+    const C_CLASS_BUTKEY_DOWN_SM = "btn btn-primary btn-sm";
+    const C_CLASS_BUTKEY_UP_SM = "btn btn-outline-secondary btn-sm";
     const C_CLASS_BUTSAVE = "btn btn-primary btn-sm my-2 my-sm-0";
     const C_CLASS_BUTSAVED = "btn btn-outline-secondary btn-sm my-2 my-sm-0";
     
 	const C_CLASS_BUTMEON = "btn btn-primary btn-sm";
-    const C_CLASS_BUTMEOFF = "btn btn-secondary btn-sm my-2 my-sm-0";
+    const C_CLASS_BUTMEOFF = "btn btn-secondary btn-sm ";
     const C_CLASS_BUTMDON = "btn btn-outline-primary btn-sm";
-    const C_CLASS_BUTMDOFF = "btn btn-outline-secondary btn-sm my-2 my-sm-0";
+    const C_CLASS_BUTMDOFF = "btn btn-outline-secondary btn-sm ";
 	
 	const C_CLASS_LIGHT_S = "badge badge-success";
 	const C_CLASS_LIGHT_W = "badge badge-warning";
@@ -337,6 +359,13 @@
       document.getElementById("btnSave").setAttribute("class", C_CLASS_BUTKEY_UP);
     }
 
+
+    function fSetWrapOn() {
+      document.getElementById("btnWrap").setAttribute("class", C_CLASS_BUTKEY_DOWN_SM);
+    }
+    function fSetWrapOff() {
+      document.getElementById("btnWrap").setAttribute("class", C_CLASS_BUTKEY_UP_SM);
+    }
 
     function fAlert(iv_msg) {
       //document.getElementById("staticBackdropLabel").innerHTML=iv_title;
@@ -409,9 +438,11 @@ function post_no_response(iv_att_postlock,iv_pact,io,cbf,cbferr){
 }
 function post(iv_pact,io,cbf){
 	printResponse("...");
+	printMessage("...");
 	post_no_response(POSTLOCK_STRICT,iv_pact,io,cbf,function(error){
 		unlockPost();
 		printResponse(iv_pact+" server error");
+		printMessage({type:"E",message:iv_pact+" server error"});
 		console.log("xhrSend3 error")
 		console.log(error);
 	});
@@ -424,6 +455,7 @@ function pap(oDataRt){
 
 	//print msg
 	if(oDataRt.msg != null) printResponse(":"+oDataRt.msg);
+	if(oDataRt.message != null) printMessage(oDataRt.message);
 
 }
 /*---------------------------------------------*/
@@ -474,6 +506,7 @@ function getInitBook(){
 	// });
 	post("getInitBook",oData,function(oDataRt){
 		printResponse(":"+oDataRt.msg);
+		printMessage(oDataRt.message);
 		console.log("getInitBook:"+oDataRt.msg);
 		go_booklist=oDataRt.booklist;
 		go_book=oDataRt.book;
@@ -504,6 +537,7 @@ function getBook(iv_userid,iv_book){
 
 	//clear response div
 	printResponse("");
+	printMessage("");
 
 	//push JSON str to a value of "js":
 	// var postData=encodeURIComponent(JSON.stringify(oData));
@@ -522,6 +556,7 @@ function getBook(iv_userid,iv_book){
 	// });
 	post("getBook",oData,function(oDataRt){
 		printResponse(":"+oDataRt.msg);
+		printMessage(oDataRt.message);
 		if(!oDataRt.pass) {
 			console.log("no access");
 			return;
@@ -560,6 +595,7 @@ function getDraft(){
 	// });
 	post("getDraft",oData,function(oDataRt){
 		printResponse(":"+oDataRt.msg);
+		printMessage(oDataRt.message);
 		if(oDataRt.book)
 			afterGetDraft(oDataRt.book.sidea,oDataRt.book.sideb);
 	});
@@ -575,6 +611,10 @@ function afterGetBook(){
 
 	if(go_book.openpage) gv_sel_page=go_book.openpage;
 	else gv_sel_page=1;
+
+	//gen/add markdown flag/property for sheets(side A only)
+	genSheetMarkDownFlag();
+
 	//show selected page content
 	showPage(gv_sel_page);
 
@@ -639,6 +679,15 @@ function shiftPage(co_sheet,iv_shift){
 function markPageChanged(io_sheet){
 	if(io_sheet.dbflag!="N") io_sheet.dbflag="C";
 	gb_changed=true;
+}
+
+function genSheetMarkDownFlag(){
+	for(var i=0;i<go_book.sheets.length;i++){
+		if(go_book.sheets[i].sidea.substring(0,2)=="# ")
+			go_book.sheets[i].md=true;
+		else
+			go_book.sheets[i].md=false;
+	}
 }
 
 function fResponse(oData){
@@ -710,22 +759,35 @@ function showPage(iv_page){
 	var lv_ta="";
 	var lv_pb="";
 	var lv_pa="";
+
+	var lo_sheet=go_book.sheets[findPageIndex(iv_page)];
+	var lo_sheet_m1=go_book.sheets[findPageIndex(iv_page-1)];
+
 	if(iv_page==1){
 		lv_b="["+go_book.title+"]";  //show cover
 
-		lv_a=go_book.sheets[findPageIndex(iv_page)].sidea;
-		lv_ta=go_book.sheets[findPageIndex(iv_page)].title;
-		lv_pa=go_book.sheets[findPageIndex(iv_page)].page;
+		// lv_a=go_book.sheets[findPageIndex(iv_page)].sidea;
+		// lv_ta=go_book.sheets[findPageIndex(iv_page)].title;
+		// lv_pa=go_book.sheets[findPageIndex(iv_page)].page;
+		lv_a=lo_sheet.sidea;
+		lv_ta=lo_sheet.title;
+		lv_pa=lo_sheet.page;
 	}else{
-		lv_b=go_book.sheets[findPageIndex(iv_page-1)].sideb;
-		lv_tb=go_book.sheets[findPageIndex(iv_page-1)].title;
-		lv_pb=go_book.sheets[findPageIndex(iv_page-1)].page;
+		// lv_b=go_book.sheets[findPageIndex(iv_page-1)].sideb;
+		// lv_tb=go_book.sheets[findPageIndex(iv_page-1)].title;
+		// lv_pb=go_book.sheets[findPageIndex(iv_page-1)].page;
+		lv_b=lo_sheet_m1.sideb;
+		lv_tb=lo_sheet_m1.title;
+		lv_pb=lo_sheet_m1.page;
 		if(iv_page==lastPage()+1)
 			lv_a="(End of book)";
 		else{
-			lv_a=go_book.sheets[findPageIndex(iv_page)].sidea;
-			lv_ta=go_book.sheets[findPageIndex(iv_page)].title;
-			lv_pa=go_book.sheets[findPageIndex(iv_page)].page;
+			// lv_a=go_book.sheets[findPageIndex(iv_page)].sidea;
+			// lv_ta=go_book.sheets[findPageIndex(iv_page)].title;
+			// lv_pa=go_book.sheets[findPageIndex(iv_page)].page;
+			lv_a=lo_sheet.sidea;
+			lv_ta=lo_sheet.title;
+			lv_pa=lo_sheet.page;
 		}
 	}
 	
@@ -736,7 +798,9 @@ function showPage(iv_page){
 	document.getElementById('pagea').innerHTML=genPageHtml(lv_pa);
 	document.getElementById('pageb').innerHTML=genPageHtml(lv_pb);
 	document.getElementById('input_title').value=lv_ta;
-	// if(gb_md) genSideAMd();	//render markdown content if switch is on
+	// auto switch markdown display if sheet is flagged as md
+	if(lo_sheet.md==true) gb_md=true;
+	else gb_md=false;
 	updateMdElements();	//render markdown content
 	//when click from page list, need to set gv_sel_page:
 	gv_sel_page=iv_page;
@@ -814,8 +878,18 @@ function printResponse(iv){
 	document.getElementById("response").innerHTML=iv;
 	document.getElementById("response2").innerHTML=iv;
 }
+function printMessage(io){
+	
+	zPtMsg("message",io);
+	// {
+	// 	message:"test abcd",
+	// 	type:"W"
+	// });
+
+}
 function clearResponse(){
 	printResponse("");
+	printMessage("");
 }
 
 function saveDraft(){
@@ -830,6 +904,7 @@ function saveDraft(){
 
 	//for now, only save side A
 	printResponse("saving draft...");
+	printMessage({message:"saving draft...",type:"T"})
 
 	//prepare data to send:
 	var oData={
@@ -856,6 +931,7 @@ function saveDraft(){
 	// });
 	post("saveDraft",oData,function(oDataRt){
 		printResponse(":"+oDataRt.msg);
+		printMessage(oDataRt.message);
 	});
 
 }
@@ -903,6 +979,9 @@ function fEdit(){
 			go_book=oDataRt.book;
 			fSetSaveOff();
 			gb_changed=false;
+
+			//gen/add markdown flag/property for sheets(side A only)
+			genSheetMarkDownFlag();
 		}
 		showPage(gv_sel_page); //re-render markdown content
 	});
@@ -922,7 +1001,25 @@ function bTogglePageB(){
 	togglePageB();
 }
 
+function bTabSel(){
+	var lv_rc=mdTabSelect("taa");
+	if(lv_rc==-1) fAlert("Markdown table not found, please place cursor within a table");
+}
+function bTabFmt(){
+	if(!gb_edit){
+		fAlert("Not in edit mode");
+		return;
+	}
+	var lv_rc=mdTabFormat("taa");
+	if(lv_rc==-1) fAlert("Markdown table not found, please place cursor within a table");
+	else eInpA();
+}
+
 function bNew(){
+	if(!gb_edit){
+		fAlert("Not in edit mode");
+		return;
+	}
 	clearResponse();
 	
 	var lv_newP=gv_sel_page;//+1;
@@ -956,6 +1053,7 @@ function bNew(){
 
 	//reminder user:
 	printResponse("click SAVE before typing!!!");
+	printMessage({type:"W",message:"click SAVE before typing!!!"});
 	fSetSaveOn();
 
 }
@@ -975,6 +1073,21 @@ function bNew(){
 // 	console.log(document.activeElement.id);
 
 // }
+
+function bWrap(){
+	var lo=document.getElementById("taa");
+	var lob=document.getElementById("tab");
+
+	if(lo.wrap==""){
+		lo.wrap="off";
+		lob.wrap="off";
+		fSetWrapOff();
+	}else{
+		lo.wrap="";
+		lob.wrap="";
+		fSetWrapOn();
+	}
+}
 
 function bMd(){
 	if(gb_edit){
@@ -1119,6 +1232,7 @@ function bSave(){
 	// });
 	post("bSave",oData,function(oDataRt){
 		printResponse(":"+oDataRt.msg);
+		printMessage(oDataRt.message);
 
 		if(oDataRt.book){
 			//update with new db rtn book:
@@ -1172,9 +1286,10 @@ function bTest(){
 function bPrev(){
 	clearResponse();
 	
-	if(gv_sel_page==1)
+	if(gv_sel_page==1){
 		printResponse("now in 1st page");
-	else{
+		printMessage("now in 1st page");
+	}else{
 		gv_sel_page--;
 		showPage(gv_sel_page);
 	}
@@ -1183,9 +1298,10 @@ function bPrev(){
 function bNext(){
 	clearResponse();
 	
-	if(gv_sel_page==lastPage()+1)
+	if(gv_sel_page==lastPage()+1){
 		printResponse("now in last page");
-	else{
+		printMessage("now in last page");
+	}else{
 		gv_sel_page++;
 		showPage(gv_sel_page);
 	}
@@ -1193,13 +1309,14 @@ function bNext(){
 
 function bMovePrev(){
 	if(!gb_edit){
-		fAlert("Not in edit mode!")
+		fAlert("Not in edit mode")
 		return;
 	}
 	clearResponse();
 	
 	if(gv_sel_page==1){
 		printResponse("Already 1st page.");
+		printMessage("Already 1st page.");
 		return;
 	}
 
@@ -1219,13 +1336,14 @@ function bMovePrev(){
 
 function bMoveNext(){
 	if(!gb_edit){
-		fAlert("Not in edit mode!")
+		fAlert("Not in edit mode")
 		return;
 	}
 	clearResponse();
 
 	if(gv_sel_page>=lastPage()){
 		printResponse("Already last page.");
+		printMessage("Already last page.");
 		return;
 	}
 
@@ -1245,7 +1363,7 @@ function bMoveNext(){
 
 function bMoveBfr(){
 	if(!gb_edit){
-		fAlert("Not in edit mode!")
+		fAlert("Not in edit mode")
 		return;
 	}
 	clearResponse();
@@ -1256,10 +1374,12 @@ function bMoveBfr(){
 		//validations:
 		if(lv_bfrP==gv_sel_page || lv_bfrP==gv_sel_page+1){
 			printResponse("Already in this position");
+			printMessage("Already in this position");
 			return;
 		}
 		if(lv_bfrP>go_book.sheets.length){
 			printResponse("Exceed total page, moving to end");
+			printMessage("Exceed total page, moving to end");
 			lv_bfrP=go_book.sheets.length+1;
 			document.getElementById("input_movebfr").value=lv_bfrP;
 		}
@@ -1422,6 +1542,7 @@ function sessionTimer(){
 		//possible network disconnects
 		printSessStat(C_CLASS_LIGHT_E,"offline");
 		printResponse(" server error");
+		printMessage({type:"E",message:"server error"});
 		console.log("sessionTimer xhrSend3 error")
 		console.log(error);
 	
@@ -1446,6 +1567,7 @@ function sesstionChkTimeoutStat(iv_remain){
 /*---------------------------------------------*/
 function init(){
 	printResponse("selecta book to start");
+	printMessage("selecta book to start");
 
 	hidePageB();
 	updateTextarea("tab");

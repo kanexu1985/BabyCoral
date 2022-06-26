@@ -1,20 +1,64 @@
 <HTML><HEAD>  
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
 	<script type="text/javascript" src="../js/xhr.js"></script>	
+	<script type="text/javascript" src="../js/z.js"></script>	
+	<!-- Bootstrap core CSS -->
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
 </HEAD><BODY> 
-	<div>
-		this is demo2
+
+	
+	<div class="row">
+		<div class="col">
+
+			<div>
+				this is demo2
+			</div>
+			
+			<div>	
+				<input type="text" size="40" name="MS" id="MS" value=""> 
+				<button class="btn btn-outline-primary btn" onClick="fTest()">Test</button>		
+				<button class="btn btn-outline-primary btn" onClick="fTest2()">Test2</button>		
+				<button class="btn btn-outline-primary btn" onClick="fTest3()">Test3</button>		
+			</div>
+
+		</div>
+	</div>
+
+	
+	<div class="row">
+		<div class="col">
+
+			<div>
+			</div>
+
+		</div>
 	</div>
 	
-	<div>	
-		<input type="text" size="40" name="MS" id="MS" value=""> 
-		<button onClick="fTest()">Test</button>		
-		<button onClick="fTest2()">Test2</button>		
-		<button onClick="fTest3()">Test3</button>		
+
+	<div class="row">
+		<div class="col">
+
+			<div id="response"></div><br>
+			<div id="msgbar_s">
+				<span class="badge badge-pill  badge-info">i</span> This is a msg.<br>
+				<span class="badge badge-pill  badge-light">...</span> This is a waiting.<br>
+				<span class="badge badge-pill  badge-success">✓</span> This is a success.<br>
+				<span class="badge badge-warning">!</span> This is a warning.<br>
+				<span class="badge badge-danger">X</span> This is an error.<br>
+				<span class="btn btn-danger btn-sm">X</span> This is an error.<br>
+				<!-- <button type="button" class="btn btn-primary btn-sm"><span class="badge badge-danger">X</span> Small button</button> -->
+			
+				<div id="msgbar_s2" style="position:relative;">
+					<span class="btn btn-danger btn-sm" style="position:absolute;left:-2.5px;top:-2.5px;">X</span>
+					<span class="badge badge-danger">X</span> This is an error.
+				</div>
+				
+			<br><br>
+			<div id="msgbar"></div><br>
+
+		</div>
 	</div>
 
-
-	<div id="response"></div>
 	
 	<script type="text/javascript">
 	
@@ -62,15 +106,18 @@ function printResponse(iv){
 }
 
 function fTest2(){
-	var obj={
-		col1:'val1',
-		col2:'val2',
-		col3:100,
-		col4:false
-	};
+	// var obj={
+	// 	col1:'val1',
+	// 	col2:'val2',
+	// 	col3:100,
+	// 	col4:false
+	// };
 
-	console.log(encodeURIComponent(JSON.stringify(obj)));
-
+	// console.log(encodeURIComponent(JSON.stringify(obj)));
+	zPtMsg("msgbar",{
+		message:"test abcd",
+		type:"I"
+	});
 
 }
 

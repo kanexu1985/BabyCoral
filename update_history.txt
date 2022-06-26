@@ -1,3 +1,15 @@
+commit 6.26:
+add icon/message type for messages (main page of Notebook module only)
+add/using SFMonoSC-Regular.ttf for non-markdown display (only side A)
+auto switch markdown/non-markdown display mode by checking if first two chars of the content is "# " (only side A)
+add [TabSel] & [TabFmt] buttons, to auto-select markdown table and auto-format markdown table
+add [Wrap] button to switch textarea(non-markdown) word wrap on/off
+fix a display bug of [MD|?] button group
+change the buttons displayed after clicking [...] to smaller size
+adjust [NEW]/[EDIT]/[SAVE] button position sequence
+Allow [NEW] page only in Edit mode
+update readme (demo book "Intro")
+
 commit 5.2b:
 adjust [MD] button layout and support display markdown in edit mode
 adding markdown play around page (link in pop up of markdown help button [?] in Notebook UI)

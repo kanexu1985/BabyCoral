@@ -18,10 +18,14 @@ exports.main=async function(io){
     var rtv;
     var lo_sesschk=zmSession.emptyObj();
     var lo_dlockchk=zmDLock.emptyObj();
+    var lv_message_type="";
 
     //check session timeout
     lo_sesschk=zmSession.checkSession(io);
-    if(lo_sesschk.remain==0) lv_msg="error, session timeout";
+    if(lo_sesschk.remain==0) {
+        lv_message_type="E";
+        lv_msg="error, session timeout";
+    }
 
     var lv_userid=zmSession.curUserid(lo_sesschk.token); 
     //see comment in function zmSession.curUserid() for more info.
@@ -43,6 +47,7 @@ exports.main=async function(io){
             };
             if(lo_dlockchk.edit) io.act='get_edit' //continue to send latest data to frontend
         }else{
+            lv_message_type="E";
             lv_msg="You cannot edit this book";
             rtv={
                 pass:lv_pass,
@@ -92,10 +97,16 @@ exports.main=async function(io){
                 var lo_book=getBookMa(lv_bookid);
                 var x = await zmDbL.asyncSql("SELECT * FROM BK_SHEETS where bookid='"+lv_bookid+"' ");
 
-                if(x.rc!=0) lv_msg=lv_msg+"get sheet error";
+                if(x.rc!=0) {
+                    lv_message_type="E";
+                    lv_msg=lv_msg+"get sheet error";
+                }
                 
                 if(io.act=='get')
-                    if(lv_msg=="") lv_msg="here's your book..."
+                    if(lv_msg=="") {
+                        lv_message_type="S";
+                        lv_msg="here's your book..."
+                    }
             
                 // if(zmSession.curUserid(lo_sesschk.token)!=zmUser.curUserid()){
                 //     console.log("you got me!!!");
@@ -119,6 +130,7 @@ exports.main=async function(io){
 
         }else{
 
+            lv_message_type="E";
             lv_msg="You cannot open this book";
             rtv={
                 pass:lv_pass,
@@ -138,7 +150,10 @@ exports.main=async function(io){
 
         //rtn error msg:
         if(x.rc!=0) lv_msg=lv_msg+"get draft error, maybe no draft?";
-        if(lv_msg=="") lv_msg="draft loaded, remember to save!"
+        if(lv_msg=="") {
+            lv_message_type="S";
+            lv_msg="draft loaded, remember to save!"
+        }
        
         if(x.r.length==0){
             rtv={
@@ -188,8 +203,14 @@ exports.main=async function(io){
         }else{
             //continue to get sheets:
             var x = await zmDbL.asyncSql("SELECT * FROM BK_SHEETS where bookid='"+lv_bookid+"' ");
-            if(x.rc!=0) lv_msg=lv_msg+"get sheet error";
-            if(lv_msg=="") lv_msg="here's your book..."
+            if(x.rc!=0) {
+                lv_message_type="E";
+                lv_msg=lv_msg+"get sheet error";
+            }
+            if(lv_msg=="") {
+                lv_message_type="S";
+                lv_msg="here's your book..."
+            }
             lo_book.sheets=x.r;
         }
        
@@ -314,8 +335,14 @@ exports.main=async function(io){
                     var lv_msg="";
         
                     //rtn error msg:
-                    if(x.rc!=0) lv_msg="save error";//:"+x.e;//JSON.stringify(x.e);
-                    if(lv_msg=="") lv_msg="saved"
+                    if(x.rc!=0) {
+                        lv_message_type="E";
+                        lv_msg="save error";//:"+x.e;//JSON.stringify(x.e);
+                    }
+                    if(lv_msg=="") {
+                        lv_message_type="S";
+                        lv_msg="saved"
+                    }
                     rtv={
                         msg:lv_msg,
                         book:{
@@ -336,6 +363,7 @@ exports.main=async function(io){
         
             }else{
 
+                lv_message_type="E";
                 lv_msg="Session timeout, you cannot save now";
                 rtv={
                     pass:lv_pass,
@@ -344,6 +372,7 @@ exports.main=async function(io){
             }
         }else{
 
+            lv_message_type="E";
             lv_msg="You cannot save this book";
             rtv={
                 pass:lv_pass,
@@ -362,8 +391,14 @@ exports.main=async function(io){
             var lv_msg="";
 
             //rtn error msg:
-            if(x.rc!=0) lv_msg=lv_msg+"draft save error";
-            if(lv_msg=="") lv_msg="draft saved"
+            if(x.rc!=0) {
+                lv_message_type="E";
+                lv_msg=lv_msg+"draft save error";
+            }
+            if(lv_msg=="") {
+                lv_message_type="S";
+                lv_msg="draft saved"
+            }
            
             rtv={
                 msg:lv_msg
@@ -379,6 +414,12 @@ exports.main=async function(io){
 
     //adding session object:
     rtv.session=lo_sesschk;
+
+    //add message (with type)
+    rtv.message={
+        type:lv_message_type,
+        message:rtv.msg
+    };
 
     return rtv;
 }

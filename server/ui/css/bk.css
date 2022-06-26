@@ -36,6 +36,15 @@ footer p {
   margin-bottom: .25rem;
 }
 
+@font-face {
+  font-family: zCnMono;
+  /* src:url("../css/SFMonoSC-Regular.ttf"); */
+  src:url("../css/sarasa-mono-sc-regular.ttf");
+}
+.ztextarea {
+  font-family: 'zCnMono';
+}
+
 .zinline{
   display: inline;
 }

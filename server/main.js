@@ -138,6 +138,7 @@ async function init(){
     zmUser.init();
     zmSession.init();
     zmBs.accessInit();
+    zmPfqin.init();
 }
 
 async function zProcessPost(iv){

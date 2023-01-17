@@ -6,6 +6,7 @@ var zmUser=require('./user.js');
 var zmBk=require('./bk.js');
 var zmSession=require('./session.js');
 var zmDLock=require('./dlock.js');
+var zmPfqin=require('./pbfyqin.js');
 
 var m_gUserid;
 
@@ -56,6 +57,7 @@ exports.main=function(io){
 function reloadJson(){
     zmUser.readJson();
     zmBs.accessReadJson();
+    zmPfqin.readJson();
 }
 
 function killsessById(iv_sessid){

@@ -1,3 +1,9 @@
+commit 2023.1.17:
+fix a bug that page draft will be saved wrongly if a new unsaved page is inserted
+fix a bug that Tag input is always enabled regarless EDIT mode or not
+fix a bug that console will output error on (End of book) by clicking ">"(next page) button
+new feature: vertical scroll bar (for side A) is now synced between markdown & non-markdown display
+
 commit 6.26:
 add icon/message type for messages (main page of Notebook module only)
 add/using SFMonoSC-Regular.ttf for non-markdown display (only side A)

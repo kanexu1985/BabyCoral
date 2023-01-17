@@ -229,6 +229,9 @@
 				<button id="btnWrap" onClick="bWrap()" type="button" class="btn btn-primary btn-sm">
 					Wrap
 				</button>
+				<button id="btnTest" onClick="bTest()" type="button" class="btn btn-primary btn-sm">
+					TEST
+				</button>
 			</div>
 			<div class="col">
 				<!-- move -->
@@ -276,9 +279,15 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div -->
-        <div class="modal-body" id="modal_msg">
+        <div class="modal-body" id="modal_msg" name="modal_panel">
           Press one key at a time, [Shift] or [Ctrl]
         </div>
+		<div class="modal-body" id="modal_p1" name="modal_panel">
+			this is modal panel 1
+		</div>
+		<div class="modal-body" id="modal_p2" name="modal_panel">
+			this is modal panel 2
+		</div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
         </div>
@@ -370,9 +379,21 @@
     function fAlert(iv_msg) {
       //document.getElementById("staticBackdropLabel").innerHTML=iv_title;
       document.getElementById("modal_msg").innerHTML = iv_msg;
-      $('#staticBackdrop').modal();
+	  fShowModalPanel("modal_msg");
+    //   $('#staticBackdrop').modal();
     }
 
+	function fShowModalPanel(iv_id){
+		var la=document.getElementsByName("modal_panel");
+
+		for(var i=0;i<la.length;i++){
+			var lo=document.getElementById(la[i].id);
+			if(la[i].id==iv_id) lo.style.display=""; 
+			else lo.style.display="none"; 
+		}
+		
+      	$('#staticBackdrop').modal();
+	}
     /* update ui */
     /** --------------------------------------- */
 
@@ -788,6 +809,10 @@ function showPage(iv_page){
 			lv_a=lo_sheet.sidea;
 			lv_ta=lo_sheet.title;
 			lv_pa=lo_sheet.page;
+
+			// auto switch markdown display if sheet is flagged as md
+			if(lo_sheet.md==true) gb_md=true;
+			else gb_md=false;
 		}
 	}
 	
@@ -798,9 +823,7 @@ function showPage(iv_page){
 	document.getElementById('pagea').innerHTML=genPageHtml(lv_pa);
 	document.getElementById('pageb').innerHTML=genPageHtml(lv_pb);
 	document.getElementById('input_title').value=lv_ta;
-	// auto switch markdown display if sheet is flagged as md
-	if(lo_sheet.md==true) gb_md=true;
-	else gb_md=false;
+	
 	updateMdElements();	//render markdown content
 	//when click from page list, need to set gv_sel_page:
 	gv_sel_page=iv_page;
@@ -896,6 +919,11 @@ function saveDraft(){
 	if(go_book==undefined || go_book==null)
 		return;
 
+	if(go_book.sheets[findPageIndex(gv_sel_page)].dbflag=="N"){
+		printMessage({type:"W",message:"Cannot save draft for unsaved new page"});
+		return;
+	}
+
 	var lv_a=document.getElementById('taa').value;
 	var lv_b=document.getElementById('tab').value;
 
@@ -973,6 +1001,7 @@ function fEdit(){
 		}
 		updateTextarea("tab");
 		updateTextarea("taa");
+		updateTextarea("input_title"); //also tag input area
 		// updateMdElements();
 
 		if(oDataRt.book!=null) {
@@ -1090,6 +1119,7 @@ function bWrap(){
 }
 
 function bMd(){
+	setPageScrollPos();
 	if(gb_edit){
 		if(gb_me){
 			gb_me=false;
@@ -1104,6 +1134,7 @@ function bMd(){
 		}
 	}
 	updateMdElements();
+	syncPageScrollPos();
 }
 function bMdHelp(){
 	var lv = "Use [MD] button to switch Markdown style:<br>\
@@ -1194,6 +1225,46 @@ Check below for supported Markdown syntax:<br>\
 	fAlert(lv);
 }
 
+var gv_pageScrollPos=0;
+
+function setPageScrollPos(){
+	//for side A only for now
+
+	// t-textare, m-markdown display
+	// c-current, t-total, p-position,%
+	if(gb_me || gb_md){
+		//markdown
+		var lv_mc=document.getElementById("damd").scrollTop;
+		var lv_mt=document.getElementById("damd").scrollHeight;
+		var lv_mp=lv_mc/lv_mt;
+
+		gv_pageScrollPos = lv_mp;
+	}else{
+		var lv_tc=document.getElementById("taa").scrollTop;
+		var lv_tt=document.getElementById("taa").scrollHeight;
+		var lv_tp=lv_tc/lv_tt;
+	
+		gv_pageScrollPos = lv_tp;
+	}
+
+}
+function syncPageScrollPos(){
+	//for side A only for now
+	//called by bMd();
+	var lv_m_go=0;
+
+	if(gb_me || gb_md){
+		//markdown
+		var lv_mt=document.getElementById("damd").scrollHeight;
+		lv_m_go=lv_mt*gv_pageScrollPos;
+		document.getElementById("damd").scrollTop=lv_m_go;
+	}else{
+		var lv_mt=document.getElementById("taa").scrollHeight;
+		lv_m_go=lv_mt*gv_pageScrollPos;
+		document.getElementById("taa").scrollTop=lv_m_go;
+	}	
+}
+
 function bQTag(){
 	document.getElementById("input_title").value="^_^";
 	eInpTitle();
@@ -1250,36 +1321,14 @@ function bMore(){
 
 function bTest(){
 
-	// var lv=go_book.sheets[findPageIndex(gv_sel_page)].sidea;
-	// console.log(getPreviewLine(lv));
+	//fShowModalPanel("modal_p2");
 
-	// var lv_msg="Session timeout, SAVE button now disabled. ";
-	// 	lv_msg=lv_msg+"You can still edit and it will automatically be saved as draft, then refresh the page to retrieve the SAVE button and retrieve the draft to save the content.";
-	// 	document.getElementById("btnSave").disabled = true;
-	// 	fAlert(lv_msg);
+	console.log(lv_tp);
+	console.log(lv_mp);
 
-	// console.log("POSTing inittest:")
-	// post_no_response(true,"inittest",{
-	// 	app:'test',
-	// 	act:'get',
-	// 	session:{token:"aa"}
-	// },function(oDataRt){
-	// 	console.log("inittest")
-	// 	console.log(oDataRt.msg)
-	// });
-
-	// console.log("POSTing inittest2:")
-	// post_no_response(true,"inittest2",{
-	// 	app:'test',
-	// 	act:'get',
-	// 	session:{token:"bb"}
-	// },function(oDataRt){
-	// 	console.log("inittest2")
-	// 	console.log(oDataRt.msg)
-	// });
-
-	// saveDraft();
-
+	//sync from t to m
+	var lv_m_go = lv_mt * lv_tp;
+	document.getElementById("damd").scrollTop=lv_m_go;
 
 }
 
@@ -1493,6 +1542,7 @@ function eInpTitle(){
 	//update display
 	printPageNum();
 	showPage(gv_sel_page);
+	fSetSaveOn();//illuminate save button
 }
 
 
@@ -1569,9 +1619,13 @@ function init(){
 	printResponse("selecta book to start");
 	printMessage("selecta book to start");
 
+	//hide test button(dev use only)
+	document.getElementById("btnTest").hidden="hidden";
+	
 	hidePageB();
 	updateTextarea("tab");
 	updateTextarea("taa");
+	updateTextarea("input_title"); //also tag input area
 	// updateMdElements();
 
 	getInitBook();

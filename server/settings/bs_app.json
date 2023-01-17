@@ -78,6 +78,13 @@
                 "admin"
             ]
         },
+        {   
+            "app": "pbfyqin",
+            "descp":"PBFY Q.In",
+            "access": [
+                "member"
+            ]
+        },
         {
             "app": "devtest",
             "descp":"Dev Test",

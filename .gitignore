@@ -1,7 +1,8 @@
 # some my private app/file not published
 server/settings/sys_cfg2.json
-server/zMod/pbfyqin.js
-server/ui/pbfyqin/
+server/settings/pbfyqin_qbut_list.json
+#server/zMod/pbfyqin.js
+#server/ui/pbfyqin/
 
 # MacOS Finder cache
 .DS_Store

@@ -1,3 +1,6 @@
+commit 1.18:
+bug fix of last new feature, scroll bar sync
+
 commit 2023.1.17:
 fix a bug that page draft will be saved wrongly if a new unsaved page is inserted
 fix a bug that Tag input is always enabled regarless EDIT mode or not

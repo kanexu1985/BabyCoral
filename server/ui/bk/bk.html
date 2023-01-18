@@ -994,6 +994,7 @@ function fEdit(){
 		console.log(oDataRt);
 		gb_edit=oDataRt.dlock.edit;
 		
+		setPageScrollPos();
 		if(gb_edit){
 			fSetEditOn();
 		}else{
@@ -1013,6 +1014,7 @@ function fEdit(){
 			genSheetMarkDownFlag();
 		}
 		showPage(gv_sel_page); //re-render markdown content
+		syncPageScrollPos();
 	});
 
 
@@ -1229,10 +1231,11 @@ var gv_pageScrollPos=0;
 
 function setPageScrollPos(){
 	//for side A only for now
+	var lv_md_div_disp=document.getElementById("damd").style.display;
 
 	// t-textare, m-markdown display
 	// c-current, t-total, p-position,%
-	if(gb_me || gb_md){
+	if(lv_md_div_disp==""){
 		//markdown
 		var lv_mc=document.getElementById("damd").scrollTop;
 		var lv_mt=document.getElementById("damd").scrollHeight;
@@ -1250,10 +1253,10 @@ function setPageScrollPos(){
 }
 function syncPageScrollPos(){
 	//for side A only for now
-	//called by bMd();
+	var lv_md_div_disp=document.getElementById("damd").style.display;
 	var lv_m_go=0;
 
-	if(gb_me || gb_md){
+	if(lv_md_div_disp==""){
 		//markdown
 		var lv_mt=document.getElementById("damd").scrollHeight;
 		lv_m_go=lv_mt*gv_pageScrollPos;
@@ -1621,7 +1624,7 @@ function init(){
 
 	//hide test button(dev use only)
 	document.getElementById("btnTest").hidden="hidden";
-	
+
 	hidePageB();
 	updateTextarea("tab");
 	updateTextarea("taa");

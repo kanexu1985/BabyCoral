@@ -3,8 +3,12 @@
 	<script type="text/javascript" src="../js/xhr.js"></script>	
 </HEAD><BODY> 
 	<div>
-		<button onClick="bGoHome()">/Home</button>
-		this is sysset
+		Sys/set
+		<br>
+		<button onClick="bGoTo('../home')">/Home</button>
+		<br>
+		<button onClick="bGoTo('./sysset.html')">/Sys/set</button>
+		<button onClick="bGoTo('./dbmaint.html')">/Sys/dbmaint</button>
 	</div>
 	
 	<div>	
@@ -38,6 +42,9 @@
 function bGoHome(){
 	window.location.replace("../home");
 }	
+function bGoTo(iv){
+	window.location.replace(iv);
+}
 /*---------------------------------------------*/
 function call(iv_act){
 

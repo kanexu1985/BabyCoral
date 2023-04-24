@@ -1,0 +1,104 @@
+<HTML><HEAD>  
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+</HEAD><BODY> 
+	<div>
+		Sys/db_maint
+		<br>
+		<button onClick="bGoTo('../home')">/Home</button>
+		<br>
+		<button onClick="bGoTo('./sysset.html')">/Sys/set</button>
+		<button onClick="bGoTo('./dbmaint.html')">/Sys/dbmaint</button>
+	</div>
+	
+	<div>
+		<font color="red" size="+4">backup db file before continue!</font><br>
+		<br>
+		1. check current db version<br>
+		<button onClick="bChkCurr()">Check Cur Version</button>		
+		<br>
+		<br>
+		2. check related upgrade SQL cmds<br>
+		<button onClick="bPrep('_xtoy')">template button, DO NOT CLICK chk upgrade from x to y</button><br>
+		<button onClick="bPrep('_0to1')">chk upgrade from 0 to 1</button><br>
+		<br>
+		<br>
+		3. execute upgrade<br>
+		response should return and content should have no error<br>
+		<button onClick="bExec('_xtoy')" disabled="disabled">template button, DO NOT CLICK exec upgrade from x to y</button><br>
+		<button onClick="bExec('_0to1')">exec upgrade from 0 to 1</button><br>
+		<br>
+		<br>
+	</div>
+
+
+	<hr height="1">
+	<div id="response"></div>
+	<hr height="1">
+	<div id="response_more" style="font-family:Monospace;"></div>
+	
+
+	<script type="text/javascript">
+
+function bGoHome(){
+	window.location.replace("../home");
+}	
+function bGoTo(iv){
+	window.location.replace(iv);
+}	
+/*---------------------------------------------*/
+function call(iv_act,iv_upkey){
+
+	//prepare data to send:
+	var oData={
+		app:'sysset',
+		act:'dbm_'+iv_act,
+		upkey:iv_upkey
+	};
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		fResponse(oDataRt);
+		// fResponse_more(oDataRt);
+
+	},function(){
+		// console.log(this);
+		console.log("server err")
+		printResponse("server err");
+	});
+	
+
+}
+
+
+function fResponse(oData){
+	//document.getElementById("response").innerHTML=oData;
+	console.log(oData);
+	printResponse(oData.msg);
+}
+
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+
+
+function bChkCurr(){
+	call("chkver","");
+}
+
+function bPrep(iv){
+	call("prep_upg",iv)
+}
+
+function bExec(iv){
+	call("exec_upg",iv)
+}
+
+</script>
+
+</body>
+</html>

@@ -1,3 +1,8 @@
+commit 4.24:
+add db update func in /Sys/ module, this is a tool used for future db table/structure extension
+some change in db, see code comment in sysset.js/const ma_db_upg_sql for more info
+CAUTION: after updating code, execute main.js, visit http://x.x.x.x/sysset/dbmaint.html and upgrade db before use the system
+
 commit 1.18:
 bug fix of last new feature, scroll bar sync
 

@@ -165,7 +165,7 @@ async function zProcessPost(iv){
             rtv=await zmBs.main(io);
         }
         if(io.app=='sysset'){
-            rtv=zmSs.main(io);
+            rtv=await zmSs.main(io);
         }
         if(io.app=='pbfyqin'){
             rtv=await zmPfqin.main(io);

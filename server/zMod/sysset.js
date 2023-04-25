@@ -74,6 +74,20 @@ exports.main=async function(io){
     console.log(rtv);
     return rtv;
 }
+/*------------------------------*/
+function reloadJson(){
+    zmUser.readJson();
+    zmBs.accessReadJson();
+    zmPfqin.readJson();
+}
+
+function killsessById(iv_sessid){
+    zmSession.killById(iv_sessid);
+}
+function killsessByUser(iv_userid){
+    zmSession.killByUser(iv_userid);
+}
+/*------------------------------*/
 
 async function chkver(){
 

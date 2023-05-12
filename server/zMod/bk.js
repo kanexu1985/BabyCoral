@@ -114,6 +114,9 @@ exports.main=async function(io){
                 //     console.log(zmUser.curUserid());
                 // }
 
+                //get jset
+                var lo_jset=await getJset(lv_bookid,lv_userid);
+
                 rtv={
                     msg:lv_msg,
                     pass:lv_pass,
@@ -125,6 +128,7 @@ exports.main=async function(io){
                     },
                     session:lo_sesschk,
                     dlock:lo_dlockchk,
+                    jset:lo_jset
                 }
             }
 
@@ -213,13 +217,17 @@ exports.main=async function(io){
             }
             lo_book.sheets=x.r;
         }
+
+        //get jset
+       var lo_jset=await getJset(lv_bookid,lv_userid);
        
         rtv={
             msg:lv_msg,
             book:lo_book,
             booklist:{
                 list:ma_BookList
-            }
+            },
+            jset:lo_jset
         };
 
     }
@@ -402,7 +410,32 @@ exports.main=async function(io){
            
             rtv={
                 msg:lv_msg
-                };
+            };
+            
+        }
+    }
+    if(io.act=='savejset'){
+
+        var lv_sql=buildSqlSaveJset(zmUser.curUserid(),io.data);
+        // console.log(lv_sql);
+
+        if(lv_sql!=""){
+            var x = await zmDbL.asyncSql(lv_sql);
+            var lv_msg="";
+
+            //rtn error msg:
+            if(x.rc!=0) {
+                lv_message_type="W";
+                lv_msg=lv_msg+"UI settings save error";
+            }
+            if(lv_msg=="") {
+                lv_message_type="I";
+                lv_msg=" UI settings of current book saved";
+            }
+           
+            rtv={
+                msg:lv_msg
+            };
             
         }
     }
@@ -963,6 +996,40 @@ function buildSqlSaveDraft(iv_userid, io){
     var lv_val="('"+iv_userid+"', "+io.bookid+", "+io.page+" )";
     var lv_odku=" sidea='"+zmDbL.utConvQuote(io.sidea)+"', sideb='"+zmDbL.utConvQuote(io.sideb)+"' ";
     return "INSERT INTO BK_DRAFT "+lv_col+" VALUES "+lv_val+" ON CONFLICT"+lv_col+" DO UPDATE SET "+lv_odku;
+}
+
+async function getJset(iv_bookid,iv_userid){
+    var rto={
+        //default set
+        pageb:false,
+        wrap:true 
+    }
+
+    var lv_sql="select jset from bk_uset_bk where userid='"+iv_userid+"' and bookid="+iv_bookid+";";
+
+    var x = await zmDbL.asyncSql(lv_sql);
+    if(x.rc!=0){
+        console.log("getJset sql err");
+    }else{
+        // console.log(x.r);
+        if(x.r[0].jset==null) return rto;//no data, return default values
+        rto=JSON.parse(x.r[0].jset);
+    }
+
+    return rto;
+}
+
+function buildSqlSaveJset(iv_userid, io){
+    /*--- below is for Sqlite --*/
+
+    /*
+    update bk_uset_bk set jset = 'xxxx'
+    where userid = 'xxx' and bookid = xxx
+    */
+
+    var lv=JSON.stringify(io.jset);
+
+    return "UPDATE BK_USET_BK SET JSET='"+lv+"' where USERID='"+iv_userid+"' and bookid="+io.bookid+";";
 }
 
 

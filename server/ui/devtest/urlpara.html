@@ -1,0 +1,20 @@
+<html><body>
+
+<a href="#" onClick="z()">click</a>
+
+<script>
+
+function zg(iv_name){
+    var lv_url=window.location.href;
+    var lo_url=new URL(lv_url);
+    return lo_url.searchParams.get(iv_name);
+}
+
+function z(){
+    console.log(zg('p1'));
+    console.log(zg('p2'));
+}
+
+</script>
+
+</body></html>

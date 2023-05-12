@@ -42,17 +42,19 @@ if(req.method=='GET'){
     }
 
 
-    var lv_getpath = zmC.PATH_HOME+zmC.PATH_GET+req.url;
+    var lv_getUrl = zmC.PATH_HOME+zmC.PATH_GET+req.url;
+    var lv_getFile=zClearUrlPara(lv_getUrl);
     var lv_ext = zExt(req.url);
     var lv_contentType=zContentType(lv_ext.toLocaleLowerCase());
 
-    zmFile.read(lv_getpath,function(err,data){
+    zmFile.read(lv_getFile,function(err,data){
         res.writeHead(200, {'Content-Type': lv_contentType});
 
         if(data==null || data==undefined) data=zmC.P404;
         if(err) {
             data=zmC.P404;
-            //console.log(err);
+            // console.log(lv_getFile);
+            // console.log(err);
         }
 
         res.write(data);
@@ -115,6 +117,12 @@ function zGenJumpPage(iv_app){
     var rtv="<script>window.location.replace(\""+lv_url+"\")</script>";
     return rtv;
 }
+function zClearUrlPara(iv){
+    //removes parameters in url
+    var lv=iv.substring(0,iv.indexOf("?"));
+    if(lv=="") lv=iv;
+    return lv;
+}
 function zContentType(iv_ext){
     var rtv="";
     if(iv_ext==".html") rtv= "text/html";
@@ -125,6 +133,8 @@ function zContentType(iv_ext){
     if(iv_ext==".txt") rtv= "text/plain";
     if(iv_ext==".gif") rtv= "image/gif";
     if(iv_ext==".jpg") rtv= "image/jpeg";
+    if(iv_ext==".woff") rtv= "font/woff";
+    if(iv_ext==".woff2") rtv= "font/woff2";
 
     return rtv;
 }
@@ -138,7 +148,7 @@ async function init(){
     zmUser.init();
     zmSession.init();
     zmBs.accessInit();
-    zmPfqin.init();
+    await zmPfqin.init();
 }
 
 async function zProcessPost(iv){

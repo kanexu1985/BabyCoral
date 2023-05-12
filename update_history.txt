@@ -1,3 +1,12 @@
+commit 5.12:
+! CAUTION ! before use this version, make sure db version has been upgraded to v1 !
+prepared for bootstrap icon (bootstrap-icons-1.10.5)
+ - only [Wrap] button is now udpated with icon. More to update next time
+URL with parameters(http://.../xx.xxx?x...x) was invalid, now it is valid
+starting to use JSET (JSON settings,for BK module), to support to save more user settings , from this update
+code structure change, button & func. like wrap, edit mode... is sharing a same function now
+add "loading..." text to cover empty divs at startup
+
 commit 4.24:
 add db update func in /Sys/ module, this is a tool used for future db table/structure extension
 some change in db, see code comment in sysset.js/const ma_db_upg_sql for more info

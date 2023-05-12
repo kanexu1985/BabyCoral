@@ -5,7 +5,7 @@ Thus this file here just keeps empty shell of functions
 in order to make the bigger framework work
 */
 
-exports.init=function(){
+exports.init=async function(){
 }
 exports.readJson=function(){
 }

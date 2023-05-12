@@ -15,6 +15,9 @@
   <!-- Bootstrap core CSS -->
   <link href="../css/bootstrap.min.css" rel="stylesheet">
 
+  <!-- icons -->
+  <link href="../css/bootstrap-icons.min.css" rel="stylesheet">
+  
   <style>
     .bd-placeholder-img {
       font-size: 1.125rem;
@@ -93,7 +96,12 @@
 
 
     <div class="container">
-		<div class="row">
+		<div id="divpagescr_loading" class="row">
+			<div class="col">
+				<div class="mx-auto" style="width: 100px; padding: 20px;">loading...</div>
+			</div>
+		</div>
+		<div id="divpagescr" class="row" style="display: none;">
 			<div class="col">
 
 				<div class="card-deck mb-3 ">
@@ -169,7 +177,7 @@
 			</div>
 		</div><!-- row which contains card(pages) -->
 
-		<div class="row"><!-- buttons -->
+		<div id="divbuttons" class="row" style="display: none;"><!-- buttons -->
 			<div class="col">
 				<div class="d-flex">
 
@@ -201,7 +209,7 @@
 			</div>
 		</div><!-- buttons -->
 
-		<div id="morebuttons" class="row"><!-- more buttons -->
+		<div id="divmorebuttons" class="row" style="display: none;"><!-- more buttons -->
 			<div class="col-md-6">
 				<button class="btn btn-outline-secondary btn-sm" type="button" onClick="bQTag()" >QTag</button>
 
@@ -213,11 +221,11 @@
 					Get Draft
 				</button>
 
-				<button onClick="bTogglePageB()" type="button" class="btn btn-outline-secondary btn-sm ">
+				<button id="btnPageB" onClick="bTogglePageB()" type="button" class="btn btn-outline-secondary btn-sm " data-toggle="tooltip" data-placement="top" title="Show back side of prev. page">
 					Backside
 				</button>
 
-				<div class="btn-group" role="group"">
+				<div class="btn-group" role="group">
 					<button onClick="bTabSel()" type="button" class="btn btn-outline-secondary btn-sm ">
 						TabSel
 					</button>
@@ -226,8 +234,8 @@
 					</button>
 				</div>
 
-				<button id="btnWrap" onClick="bWrap()" type="button" class="btn btn-primary btn-sm">
-					Wrap
+				<button id="btnWrap" onClick="bWrap()" type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Text wrap">
+					<i class="bi-text-wrap"></i>
 				</button>
 				<button id="btnTest" onClick="bTest()" type="button" class="btn btn-primary btn-sm">
 					TEST
@@ -376,6 +384,13 @@
       document.getElementById("btnWrap").setAttribute("class", C_CLASS_BUTKEY_UP_SM);
     }
 
+    function fSetPageBOn() {
+      document.getElementById("btnPageB").setAttribute("class", C_CLASS_BUTKEY_DOWN_SM);
+    }
+    function fSetPageBOff() {
+      document.getElementById("btnPageB").setAttribute("class", C_CLASS_BUTKEY_UP_SM);
+    }
+
     function fAlert(iv_msg) {
       //document.getElementById("staticBackdropLabel").innerHTML=iv_title;
       document.getElementById("modal_msg").innerHTML = iv_msg;
@@ -491,10 +506,60 @@ var go_book;
 var go_booklist;
 // var gv_time_book_get;
 var gb_postlock=false //true=locking and do not allow post
+var go_jset;		  //more user settings in JSON, stored in server db
 
 function updateTextarea(iv_id){
 	if(gb_edit) document.getElementById(iv_id).disabled=false;
 	else document.getElementById(iv_id).disabled=true;
+}
+
+function fEnableFunc(iv_func,ib_setTo){
+	if(iv_func=="PAGEB"){
+		if(ib_setTo){
+			document.getElementById("divpageb").style.display="";
+			fSetPageBOn();
+		}else{
+			document.getElementById("divpageb").style.display="none";
+			fSetPageBOff();
+		} 
+	}
+	if(iv_func=="EDIT"){
+		gb_edit=ib_setTo;
+		if(ib_setTo){
+			fSetEditOn();
+		}else{
+			fSetEditOff();
+		}
+		updateTextarea("tab");
+		updateTextarea("taa");
+		updateTextarea("input_title"); //also tag input area
+	}	
+	if(iv_func=="WRAP"){
+		var lo=document.getElementById("taa");
+		var lob=document.getElementById("tab");
+		if(ib_setTo){
+			lo.wrap="";
+			lob.wrap="";
+			fSetWrapOn();
+		}else{
+			lo.wrap="off";
+			lob.wrap="off";
+			fSetWrapOff();
+		}
+	}	
+
+}
+function fCheckFunc(iv_func){
+	if(iv_func=="PAGEB"){
+		var lv=document.getElementById("divpageb").style.display;
+		if(lv=="") return true;		 	//true = currently showing page b
+		else return false;
+	}
+	if(iv_func=="WRAP"){
+		var lo=document.getElementById("taa");
+		if(lo.wrap=="") return true;	//true = wrap is active
+		else return false;
+	}
 }
 /*---------------------------------------------*/
 function fTest(){
@@ -503,6 +568,8 @@ function fTest(){
     /******************************/
 
 function getInitBook(){
+	//this action also gets JSET, reveal scr...
+
 	clearResponse();
 	
 	var oData={
@@ -531,8 +598,11 @@ function getInitBook(){
 		console.log("getInitBook:"+oDataRt.msg);
 		go_booklist=oDataRt.booklist;
 		go_book=oDataRt.book;
+		go_jset=oDataRt.jset;
 		afterGetBookList();
 		afterGetBook();
+		afterGetJset();
+		revealScr();//only call this func. at init
 	});
 }
 
@@ -585,7 +655,9 @@ function getBook(iv_userid,iv_book){
 
 		if(oDataRt.book!=null){
 			go_book=oDataRt.book;
+			go_jset=oDataRt.jset;
 			afterGetBook();
+			afterGetJset();
 		}
 	});
 }
@@ -624,6 +696,17 @@ function getDraft(){
 }
 
     /******************************/
+function afterGetJset(){
+	applyJset();
+}
+function applyJset(){
+	fEnableFunc("PAGEB",go_jset.pageb);
+	fEnableFunc("WRAP",go_jset.wrap);
+}
+function collectJset(){
+	go_jset.pageb=fCheckFunc("PAGEB");
+	go_jset.wrap=fCheckFunc("WRAP");
+}
 
 function afterGetBook(){
 
@@ -753,25 +836,27 @@ function genSideAMd(){
       marked.parse(lv);
 }
 
-function togglePageB(){
-	var lv=document.getElementById("divpageb").style.display;
-	//console.log(lv);
-	if(lv=="") document.getElementById("divpageb").style.display="none" ;
-	else document.getElementById("divpageb").style.display="";
-}
-function hidePageB(){
-	document.getElementById("divpageb").style.display="none";
-}
+// function togglePageB(){
+// 	// var lv=document.getElementById("divpageb").style.display;
+// 	// //console.log(lv);
+// 	// if(lv=="") document.getElementById("divpageb").style.display="none" ;
+// 	// else document.getElementById("divpageb").style.display="";
+// 	if(fCheckFunc("PAGEB")) fEnableFunc("PAGEB",false);
+// 	else fEnableFunc("PAGEB",true);
+// }
+// function hidePageB(){
+// 	document.getElementById("divpageb").style.display="none";
+// }
 
 function toggleMoreButtons(){
-	var lv=document.getElementById("morebuttons").style.display;
+	var lv=document.getElementById("divmorebuttons").style.display;
 	//console.log(lv);
-	if(lv=="") document.getElementById("morebuttons").style.display="none" ;
-	else document.getElementById("morebuttons").style.display="";
+	if(lv=="") document.getElementById("divmorebuttons").style.display="none" ;
+	else document.getElementById("divmorebuttons").style.display="";
 }
-function hideMoreButtons(){
-	document.getElementById("morebuttons").style.display="none";
-}
+// function hideMoreButtons(){
+// 	document.getElementById("morebuttons").style.display="none";
+// }
 
 function showPage(iv_page){
 	var lv_b="";
@@ -963,6 +1048,25 @@ function saveDraft(){
 	});
 
 }
+
+function saveJset(){
+	collectJset();
+	var oData={
+		app:"bk",
+		act:"savejset",
+		data:{
+			bookid:go_book.bookid,
+			jset:go_jset
+		},
+		session:{token:gv_sesstok}
+	};
+
+	post("savejset",oData,function(oDataRt){
+		printResponse(":"+oDataRt.msg);
+		printMessage(oDataRt.message);
+	});
+
+}
     /******************************/
 function bEd(){
 	//block action if content has changed
@@ -992,18 +1096,20 @@ function fEdit(){
 		session:{token:gv_sesstok}
 	},function(oDataRt){
 		console.log(oDataRt);
-		gb_edit=oDataRt.dlock.edit;
+		// gb_edit=oDataRt.dlock.edit;
 		
 		setPageScrollPos();
-		if(gb_edit){
-			fSetEditOn();
-		}else{
-			fSetEditOff();
-		}
-		updateTextarea("tab");
-		updateTextarea("taa");
-		updateTextarea("input_title"); //also tag input area
-		// updateMdElements();
+		// if(gb_edit){
+		// 	fSetEditOn();
+		// }else{
+		// 	fSetEditOff();
+		// }
+		// updateTextarea("tab");
+		// updateTextarea("taa");
+		// updateTextarea("input_title"); //also tag input area
+		// // updateMdElements();
+
+		fEnableFunc("EDIT",oDataRt.dlock.edit);
 
 		if(oDataRt.book!=null) {
 			go_book=oDataRt.book;
@@ -1029,7 +1135,12 @@ function bGetDraft(){
 }
 
 function bTogglePageB(){
-	togglePageB();
+	// togglePageB();
+
+	if(fCheckFunc("PAGEB")) fEnableFunc("PAGEB",false);
+	else fEnableFunc("PAGEB",true);
+
+	saveJset();
 }
 
 function bTabSel(){
@@ -1106,18 +1217,22 @@ function bNew(){
 // }
 
 function bWrap(){
-	var lo=document.getElementById("taa");
-	var lob=document.getElementById("tab");
+	// var lo=document.getElementById("taa");
+	// var lob=document.getElementById("tab");
 
-	if(lo.wrap==""){
-		lo.wrap="off";
-		lob.wrap="off";
-		fSetWrapOff();
-	}else{
-		lo.wrap="";
-		lob.wrap="";
-		fSetWrapOn();
-	}
+	// if(lo.wrap==""){
+	// 	lo.wrap="off";
+	// 	lob.wrap="off";
+	// 	fSetWrapOff();
+	// }else{
+	// 	lo.wrap="";
+	// 	lob.wrap="";
+	// 	fSetWrapOn();
+	// }
+	if(fCheckFunc("WRAP")) fEnableFunc("WRAP",false);
+	else fEnableFunc("WRAP",true);
+
+	saveJset();
 }
 
 function bMd(){
@@ -1619,22 +1734,29 @@ function sesstionChkTimeoutStat(iv_remain){
 }
 /*---------------------------------------------*/
 function init(){
+	//init bootstrap tooltip
+	$(function () {
+		$('[data-toggle="tooltip"]').tooltip()
+	})
+
 	printResponse("selecta book to start");
 	printMessage("selecta book to start");
 
 	//hide test button(dev use only)
 	document.getElementById("btnTest").hidden="hidden";
 
-	hidePageB();
-	updateTextarea("tab");
-	updateTextarea("taa");
-	updateTextarea("input_title"); //also tag input area
-	// updateMdElements();
+	// // hidePageB();
+	// updateTextarea("tab");
+	// updateTextarea("taa");
+	// updateTextarea("input_title"); //also tag input area
+	// // updateMdElements();
+	/* above actions now done in applyJset() from getInitBook() */
 
 	getInitBook();
+	//there're more actions than just get init book, check func. code for more detail
 
 	// bEd();//click Edit once to enable edit mode
-	hideMoreButtons();//hide more button bar
+	// hideMoreButtons();//hide more button bar
 
 	sessionTimer();
 	//start timer0
@@ -1645,6 +1767,12 @@ function init(){
 
 }
 init();
+function revealScr(){
+	//only called once at app start event (in getInitBook() call back)
+	document.getElementById("divpagescr").style.display="block";
+	document.getElementById("divbuttons").style.display="block";
+	document.getElementById("divpagescr_loading").style.display="none";
+}
 /*---------------------------------------------*/
 
 

@@ -1,3 +1,8 @@
+commit 5.26:
+! CAUTION ! package.json updated and new module is used, use "npm install" to update before use.
+fix a bug on BK module: when user opens a book with corresponding jset empty, may dump
+add function to call shell via nodejs, this is currently in devtest module
+
 commit 5.12:
 ! CAUTION ! before use this version, make sure db version has been upgraded to v1 !
 prepared for bootstrap icon (bootstrap-icons-1.10.5)

@@ -3,8 +3,9 @@ var zmUt = require('./ut.js');
 // var zmLock=require('./lock.js');
 var zmSession=require('./session.js');
 var zmUser=require('./user.js');
+var zmC=require('./cons.js');
 
-exports.main=function(io){
+exports.main=async function(io){
     var lo_sesschk;
     var rtv;
 
@@ -38,6 +39,12 @@ exports.main=function(io){
             console.log(zmUser.curUserid());
         // }
     }
+    if(io.act=='call_shell'){
+        var lv_msg = await call_shell();
+        rtv={
+            msg:lv_msg
+        }
+    }
     return rtv;
 }
 
@@ -46,3 +53,32 @@ exports.test_timer=function(){
 
 /***********************/
 /*---------------------------------------------*/
+async function fexec(){
+    
+    var rtv;
+    const spawn = require('await-spawn');
+    try {
+        const bl = await spawn('ls', ['-al'])
+        rtv = bl.toString();
+        // console.log(bl.toString())
+    } catch (e) {
+        // console.log(e.stderr.toString())
+        rtv =e.stderr.toString(); 
+    }
+    return rtv;
+}
+async function call_shell(){
+    var rtv;
+    const c_shell=zmC.DEVTEST_SHELL;
+    const spawn = require('await-spawn');
+    try {
+        // const bl = await spawn('ls', ['-al']);
+        const bl = await spawn(c_shell );
+        rtv = bl.toString();
+        // console.log(bl.toString())
+    } catch (e) {
+        // console.log(e.stderr.toString())
+        rtv =e.stderr.toString(); 
+    }
+    return rtv;
+}

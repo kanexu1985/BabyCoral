@@ -27,6 +27,11 @@
 		</div>
 	</div>
 
+	<div>
+		<div>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bCallShell()">CallShell</button>
+		</div>
+	</div>
 
 	<div class="row">
 		<div class="col">
@@ -110,6 +115,19 @@ function bTest(){
 		app:'devtest',
 		act:'test'
 	},function(oDataRt){
+		console.log(oDataRt);
+		printResponse(":"+oDataRt.msg);
+		
+	});
+}
+function bCallShell(){
+	
+	post({
+		app:'devtest',
+		act:'call_shell'
+	},function(oDataRt){
+		//convert new-line to <br>
+		oDataRt.msg=oDataRt.msg.replace(/\n/g,"<br>");
 		console.log(oDataRt);
 		printResponse(":"+oDataRt.msg);
 		

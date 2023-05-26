@@ -23,5 +23,7 @@
     "_ // BK_TEMP_BOOKDEFAULT":"temp value for book",
 
     "TIMEOUT_MIN":"15",
-	"_ end":""
+	"_ end":"",
+
+    "DEVTEST_SHELL":"server/shell/devtest.sh"
 }

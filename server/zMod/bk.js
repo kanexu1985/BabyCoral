@@ -1012,7 +1012,17 @@ async function getJset(iv_bookid,iv_userid){
         console.log("getJset sql err");
     }else{
         // console.log(x.r);
-        if(x.r[0].jset==null) return rto;//no data, return default values
+        try{//try to check if null, may have error
+            if(x.r[0].jset==null){
+                console.log("getJset check is null, returning empty data");
+                return rto;//no data, return default values
+            } 
+        }catch(e){
+            console.log("getJset err:");
+            console.log(e);
+            return rto;//no data, return default values
+        }
+        // if(x.r[0].jset==null) return rto;//no data, return default values
         rto=JSON.parse(x.r[0].jset);
     }
 

@@ -190,7 +190,7 @@ async function zProcessPost(iv){
             rtv=zmDemoDataLock.main(io);
         }
         if(io.app=='devtest'){
-            rtv=zmDevtest.main(io);
+            rtv=await zmDevtest.main(io);
         }
         /*----------------*/
 

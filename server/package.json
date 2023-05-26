@@ -12,6 +12,8 @@
   "author": "Kane",
   "license": "ISC",
   "dependencies": {
+    "await-spawn": "^4.0.2",
+    "axios": "^0.24.0",
     "http": "0.0.1-security",
     "sqlite3": "^5.0.2"
   }

@@ -85,6 +85,13 @@
                 "member"
             ]
         },
+        {   
+            "app": "ripck",
+            "descp":"RIPC Keep",
+            "access": [
+                "member"
+            ]
+        },
         {
             "app": "devtest",
             "descp":"Dev Test",

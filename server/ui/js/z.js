@@ -2,20 +2,25 @@ function genButs(ia_menu){
 	var rtv="";
 	if(ia_menu){
 		for(var i=0;i<ia_menu.length;i++){
-			rtv=rtv+genBut(ia_menu[i].app,ia_menu[i].descp)+"\n";
+			// rtv=rtv+genBut(ia_menu[i].app,ia_menu[i].descp)+"\n";
+			rtv=rtv+genBut(ia_menu[i].app,ia_menu[i].descp,ia_menu[i].link)+"\n";
 		}
 	}
 
 	return rtv;
 }
 
-function genBut(iv_app,iv_descp){
+// function genBut(iv_app,iv_descp){
+function genBut(iv_app,iv_descp,iv_link){
 /*
 <a class="btn btn-outline-primary btn-lg" href="../bk"  role="button">
 	BK
 </a>
 */	
-	return "<a class=\"btn btn-outline-secondary btn-lg \" href=\"../"+iv_app+"\"  role=\"button\">"+iv_descp+"</a>";
+	if(iv_app != "")
+		return "<a class=\"btn btn-outline-secondary btn-lg \" href=\"../"+iv_app+"\"  role=\"button\">"+iv_descp+"</a>";
+	if(iv_link)
+		return "<a class=\"btn btn-outline-secondary btn-lg \" href=\""+iv_link+"\"  role=\"button\" target=\"_blank\" >"+iv_descp+"</a>";
 }
 
 function zPtMsg(iv_divId, io_msg){

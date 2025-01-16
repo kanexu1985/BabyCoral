@@ -1,3 +1,6 @@
+commit 2025.1.17:
+add support to add URL link in bs_app.json, to provide a quick go-to-URL button in Home page
+
 commit 5.26:
 ! CAUTION ! package.json updated and new module is used, use "npm install" to update before use.
 fix a bug on BK module: when user opens a book with corresponding jset empty, may dump

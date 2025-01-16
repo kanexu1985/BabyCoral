@@ -72,6 +72,11 @@
             ]
         },
         {
+            "app":"",
+            "link":"http://bing.com",
+            "descp":"Bing"
+        },
+        {
             "app": "sysset",
             "descp":"Sys Setting",
             "access": [

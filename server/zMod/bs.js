@@ -212,11 +212,13 @@ function genMenu(){
     var la_app=m_db_app.apps;
 
     for(var i=0;i<la_app.length;i++)
-        if(la_app[i].descp)//only loop at descp exists
+        // if(la_app[i].descp)//only loop at descp exists
+        if(la_app[i].descp || la_app[i].link)//only loop at descp/link exists
         if(exports.accessCheckGet("/"+la_app[i].app))//use func. to check accessible app
             
             rta.push({
                 app:la_app[i].app,
+                link:la_app[i].link,
                 descp:la_app[i].descp
             });
 

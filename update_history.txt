@@ -1,3 +1,8 @@
+commit 2025.1.29:
+add new app: TV series watch note
+this is for:
+when watching TV series, I cannot remember which ep I previously watched. Thus, I make this tool to take a note, which ep to watch next
+
 commit 2025.1.17:
 add support to add URL link in bs_app.json, to provide a quick go-to-URL button in Home page
 

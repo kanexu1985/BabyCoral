@@ -8,6 +8,7 @@ var zmBk=require('./zMod/bk.js');
 var zmSs=require('./zMod/sysset.js');
 var zmPfqin=require('./zMod/pbfyqin.js');
 var zmRipck=require('./zMod/ripck.js');
+var zmTvswn=require('./zMod/tvswn.js');
 var zmSession=require('./zMod/session.js');
 var zmDevtest=require('./zMod/devtest.js');
 var zmDemosession=require('./zMod/demosession.js');
@@ -183,6 +184,9 @@ async function zProcessPost(iv){
         }
         if(io.app=='ripck'){
             rtv=await zmRipck.main(io);
+        }
+        if(io.app=='tvswn'){
+            rtv=await zmTvswn.main(io);
         }
         if(io.app=='session'){
             rtv=zmSession.main(io);

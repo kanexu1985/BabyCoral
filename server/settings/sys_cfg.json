@@ -22,6 +22,13 @@
     "BK_TEMP_BOOKDEFAULT":1,
     "_ // BK_TEMP_BOOKDEFAULT":"temp value for book",
 
+
+    "PATH_TVSWN":"/data/tvswn",
+    "TVSWN_SHELL_LS":"server/shell/tvswn_ls.sh",
+    "TVSWN_SHELL_NEW":"server/shell/tvswn_new.sh",
+    "TVSWN_SHELL_CHG":"server/shell/tvswn_chg.sh",
+    "TVSWN_SHELL_DEL":"server/shell/tvswn_del.sh",
+
     "TIMEOUT_MIN":"15",
 	"_ end":"",
 

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<HEAD>  
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+	<script type="text/javascript" src="../js/z.js"></script>	
+	<!-- Bootstrap core CSS -->
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
+</HEAD><BODY> 
+	
+<main role="main">
+<div class="container">
+
+    <div class="row">
+        <div class="col">
+			<button type="button" class="btn btn-dark" onClick="bGoHome()">/Home</button>
+			<br>
+			<div id="divcurr">cur sel:</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+			<!-- <div class="d-flex"> -->
+				<input type="text" class="form-control"  id="iname" placeholder="name" value="" onchange="pai()" onkeyup="pai()"> 
+				<input type="text" class="form-control"  id="inote" placeholder="note" value="" onchange="pai()" onkeyup="pai()" > 
+				<input type="text" class="form-control"  id="ise" placeholder="season" value=""  onchange="pai()" onkeyup="pai()"> 
+				<input type="text" class="form-control"  id="iep" placeholder="ep" value=""  onchange="pai()" onkeyup="pai()"> 
+				<input  class="btn btn-outline-primary" type="button" value="EP-" onClick="bEp(-1)">
+				<input  class="btn btn-outline-primary" type="button" value="EP+" onClick="bEp(1)">
+				<input  class="btn btn-outline-primary" type="button" value="CLR" onClick="bClr()">
+				<input  class="btn btn-primary" type="button" value="CHG" onClick="bChg()">
+				<input  class="btn btn-primary" type="button" value="NEW" onClick="bNew()">
+				<input  class="btn btn-primary" type="button" value="DEL" onClick="bDel()">
+			<!-- </div> -->
+        </div>
+    </div>
+	
+	<div class="row">
+		<div class="col">
+			<div id="file_prev">--</div>
+		</div>
+	</div>
+    <hr>
+	<div>
+		<div>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bRef()">Refresh</button>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<!-- CR:11 / FY:11 / PB -->
+			<div id="response"></div>
+			<div id="sessionstat"></div>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col">
+			<!--spare-->
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<div id="divlist">123</div>
+		</div>
+	</div>
+
+</div><!--container-->
+</main>
+	
+
+
+<script src="../js/jquery-3.5.1.slim.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
+	
+	<script type="text/javascript">
+	
+/*---------------------------------------------*/
+var gv_sel="";
+var gv_new="";
+/*---------------------------------------------*/
+function pai(){
+   gv_new=fGenNewFile();
+
+   updatePrev(gv_new);
+   updateSel(gv_sel);
+}
+function updateSel(iv){
+    document.getElementById("divcurr").innerHTML="cur sel: "+iv;
+}
+function updatePrev(iv){
+    document.getElementById("file_prev").innerHTML="new: "+iv;
+}
+function fGenNewFile(){
+    var lv_name=document.getElementById("iname").value;
+    var lv_note=document.getElementById("inote").value;
+    var lv_se=document.getElementById("ise").value;
+    var lv_ep=document.getElementById("iep").value;
+
+	var rtv="";
+
+	if(lv_name.trim()!="" &&
+		lv_note.trim()!="" &&
+		lv_se.trim()!="" &&
+		lv_ep.trim()!="")
+		rtv=lv_name+"_"+lv_note+"_"+lv_se+"_"+lv_ep;
+	
+	return rtv;
+}
+
+/*---------------------------------------------*/
+function goto(iv_url){
+	window.location.replace(iv_url);
+}
+/*---------------------------------------------*/
+
+function fResponse(oData){
+	console.log(oData);
+	printResponse(oData.msg);
+}
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+function clearResponse(){
+	printResponse("");
+}
+/*---------------------------------------------*/
+function post(io,cbf){
+	printResponse("...");
+	
+	var oData=io;
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		// console.log(oDataRt);
+		// printResponse(":"+oDataRt.msg);
+		cbf(oDataRt);
+	},function(){
+		printResponse("server error");
+	});
+}
+/*---------------------------------------------*/
+function bGoHome(){
+	goto("../home");
+}
+
+function bClr(){
+	document.getElementById("iname").value="";
+	document.getElementById("inote").value="";
+	document.getElementById("ise").value="";
+	document.getElementById("iep").value="";
+	pai();
+}
+function bRef(){
+	bCallShell("ls");
+}
+function bNew(){
+	
+	if(gv_new==""){
+		printResponse("error: new file not ready");
+		return;
+	}
+	bCallShell("new");
+}
+function bChg(){
+	if(gv_sel==""){
+		printResponse("error: no file selected");
+		return;
+	}
+	if(gv_new==""){
+		printResponse("error: new file not ready");
+		return;
+	}
+	bCallShell("chg");
+}
+function bDel(){
+	if(gv_sel==""){
+		printResponse("error: no file selected");
+		return;
+	}
+	bCallShell("del");
+}
+function bSel(iv){
+	// console.log(iv);
+    gv_sel=iv;
+	   
+	//update input fileds
+	var la=iv.split("_");
+	document.getElementById("iname").value=la[0];
+    document.getElementById("inote").value=la[1];
+    document.getElementById("ise").value=la[2];
+	document.getElementById("iep").value=la[3];
+    pai();
+}
+function bEp(iv){
+	var lv=document.getElementById("iep").value;
+	var lv2=parseInt(lv)+iv;
+	
+	document.getElementById("iep").value=lv2;
+	pai();
+}
+function bCallShell(iv){
+	
+	post({
+		app:'tvswn',
+		act:iv,
+		data:{
+			old:gv_sel,
+			new:gv_new
+		}
+	},function(oDataRt){
+		//convert new-line to <br>
+		oDataRt.msg=oDataRt.msg.replace(/\n/g,"<br>");
+		// console.log(oDataRt);
+		// if(iv=="ls") printList(oDataRt.msg);
+		// else printResponse(oDataRt.msg);
+		// if(iv=="ls") {
+			gv_sel="";
+			bClr();
+		// }
+		printList(oDataRt.msg);
+	});
+}
+/*---------------------------------------------*/
+function fPrintGo(){
+	var lv="";
+	for(let key in go){
+		lv=lv+key+":\t"+go[key]+"<br>";
+	}
+
+	printResponse(lv);
+}
+	
+/*---------------------------------------------*/
+function printList(iv){
+	var la=iv.split("<br>");
+	// console.log(la);
+	var lv="";
+
+	for(var i=0;i<la.length;i++){
+		if(!la[i].trim()=="")
+		lv=lv+genListSingle(la[i])+"<br>";
+	}
+
+	document.getElementById("divlist").innerHTML=lv;
+	printResponse(":");
+
+}
+function genListSingle(iv){
+	// if(iv.trim()=="") return;
+	var lv='<button type="button" class="btn btn-outline-primary btn" onClick="bSel(\''+iv+'\')">'+iv+'</button>';
+	return lv;
+}
+/*---------------------------------------------*/
+init();
+function init(){
+	bRef();
+}
+
+/*---------------------------------------------*/
+
+</script>
+
+</body>
+</html>
+
+

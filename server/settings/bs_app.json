@@ -97,6 +97,13 @@
                 "member"
             ]
         },
+        {   
+            "app": "tvswn",
+            "descp":"TVs",
+            "access": [
+                "member"
+            ]
+        },
         {
             "app": "devtest",
             "descp":"Dev Test",

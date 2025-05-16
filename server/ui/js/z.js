@@ -17,7 +17,7 @@ function genBut(iv_app,iv_descp,iv_link){
 	BK
 </a>
 */	
-	if(iv_app != "")
+	if(iv_app != "" && !iv_link)
 		return "<a class=\"btn btn-outline-secondary btn-lg \" href=\"../"+iv_app+"\"  role=\"button\">"+iv_descp+"</a>";
 	if(iv_link)
 		return "<a class=\"btn btn-outline-secondary btn-lg \" href=\""+iv_link+"\"  role=\"button\" target=\"_blank\" >"+iv_descp+"</a>";

@@ -72,9 +72,12 @@
             ]
         },
         {
-            "app":"",
+            "app":"link_bing",
             "link":"http://bing.com",
-            "descp":"Bing"
+            "descp":"Bing",
+            "access": [
+                "member"
+            ]
         },
         {
             "app": "sysset",

@@ -107,6 +107,13 @@
                 "member"
             ]
         },
+        {   
+            "app": "fuellog",
+            "descp":"FuelLog",
+            "access": [
+                "member"
+            ]
+        },
         {
             "app": "devtest",
             "descp":"Dev Test",

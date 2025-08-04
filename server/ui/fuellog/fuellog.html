@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<HEAD>  
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	
+	<script type="text/javascript" src="../js/xhr.js"></script>	
+	<script type="text/javascript" src="../js/z.js"></script>	
+	<!-- Bootstrap core CSS -->
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
+</HEAD><BODY> 
+	
+<main role="main">
+<div class="container">
+
+    <div class="row">
+        <div class="col">
+			<button type="button" class="btn btn-dark" onClick="bGoHome()">/Home</button>
+			<br>
+			<div id="divcurr">input:</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+			<!-- <div class="d-flex"> -->
+				<input type="date" class="form-control"  id="idate" placeholder="date"  value="" onChange="pai()" onkeyup="pai()">
+				<input type="text" class="form-control"  id="iloc" placeholder="location" value="" onchange="pai()" onkeyup="pai()" > 
+				<input type="number" class="form-control"  id="iodo" placeholder="odometer" value=""  onchange="pai()" onkeyup="pai()"> 
+				<input type="number" class="form-control"  id="icos" placeholder="cost" value="" onchange="pai()" onkeyup="pai()"> 
+				<input type="number" class="form-control"  id="ilit" placeholder="liters" value=""  onchange="pai()" onkeyup="pai()"> 
+				<input type="number" class="form-control"  id="icpl" placeholder="cost per liters" value=""  onchange="pai()" onkeyup="pai()"> 
+				<input type="text" class="form-control"  id="icom" placeholder="comment" value=""  onchange="pai()" onkeyup="pai()"> 
+				<input  class="btn btn-outline-primary" type="button" value="Reset" onClick="bReset()">
+				<input  class="btn btn-primary" type="button" value="NEW" onClick="bNew()">
+			<!-- </div> -->
+        </div>
+    </div>
+	
+	<div class="row">
+		<div class="col">
+			<div id="div_cmd">--</div>
+		</div>
+	</div>
+    <hr>
+	<div>
+		<div>
+			<button type="button" class="btn btn-outline-primary btn"  onClick="bRef()">Refresh</button>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<!-- CR:11 / FY:11 / PB -->
+			<div id="response"></div>
+			<div id="sessionstat"></div>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col">
+			<!--spare-->
+
+
+
+<div class="input-group mb-3">
+	<span class="input-group-text" id="basic-addon1">rm 20</span>
+	<input type="text" class="form-control" id="irm2"  value=""  onchange="pai()" onkeyup="pai()" >
+	<button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="bRm2()">exec rm</button>
+</div>
+
+
+
+
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<!--spare-->
+		</div>
+	</div>
+
+</div><!--container-->
+</main>
+	
+
+
+<script src="../js/jquery-3.5.1.slim.min.js"></script>
+<script src="../js/bootstrap.bundle.min.js"></script>
+	
+	<script type="text/javascript">
+	
+/*---------------------------------------------*/
+const C_RM2_INITIAL="20";
+var gv_sel="";
+var gv_new="";
+var gv_rm2=C_RM2_INITIAL;
+var go_default={};
+/*---------------------------------------------*/
+function pai(){
+
+	//calculate cost per liters:
+    var lv_cos=parseFloat(document.getElementById("icos").value);
+    var lv_lit=parseFloat(document.getElementById("ilit").value);
+	var lv_cpl=0;
+	if(lv_cos != 0 && lv_lit != 0){
+		lv_cpl = lv_cos/lv_lit;
+		lv_cpl = Math.round(lv_cpl*100)/100
+		document.getElementById("icpl").value=lv_cpl;
+	}
+
+	gv_new=fGenNewCmd();
+	gv_rm2=fGenRmPara();
+
+	document.getElementById("div_cmd").innerHTML="new: "+gv_new+"<br>rm: "+gv_rm2;
+
+}
+function fGenToday(){
+
+  var today = new Date();
+  var year = today.getFullYear();
+  var month = today.getMonth() + 1; 
+  var day = today.getDate();
+
+  var formattedDate = year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day);
+
+  return formattedDate;
+
+}
+function fGenNewCmd(){
+    var lv_date=document.getElementById("idate").value;
+    var lv_loc=document.getElementById("iloc").value;
+    var lv_odo=document.getElementById("iodo").value;
+    var lv_cos=document.getElementById("icos").value;
+    var lv_lit=document.getElementById("ilit").value;
+    var lv_cpl=document.getElementById("icpl").value;
+    var lv_com=document.getElementById("icom").value;
+
+	var rtv="";
+
+	var sep=go_default.sep;
+
+	rtv=lv_date+sep+lv_loc+sep+lv_odo+sep+lv_cos+sep+lv_lit+sep+lv_cpl+sep+lv_com;
+	
+	return rtv;
+}
+function fGenRmPara(){
+	var lv=document.getElementById("irm2").value;
+	return C_RM2_INITIAL+lv;
+}
+function fGetInit(){
+	
+	post({
+		app:'fuellog',
+		act:'init'
+	},function(oDataRt){
+		// console.log(oDataRt);
+		go_default=oDataRt.data;
+		bReset();
+		pai();
+	});	
+}
+/*---------------------------------------------*/
+function goto(iv_url){
+	window.location.replace(iv_url);
+}
+/*---------------------------------------------*/
+
+function fResponse(oData){
+	console.log(oData);
+	printResponse(oData.msg);
+}
+
+function printResponse(iv){
+	document.getElementById("response").innerHTML=iv;
+}
+function clearResponse(){
+	printResponse("");
+}
+/*---------------------------------------------*/
+function post(io,cbf){
+	printResponse("...");
+	
+	var oData=io;
+
+	//push JSON str to a value of "js":
+	var postData=encodeURIComponent(JSON.stringify(oData));
+	//send data
+	xhrSend2(postData,function(oDataRt){
+		// console.log(oDataRt);
+		// printResponse(":"+oDataRt.msg);
+		cbf(oDataRt);
+	},function(){
+		printResponse("server error");
+	});
+}
+/*---------------------------------------------*/
+function bGoHome(){
+	goto("../home");
+}
+
+
+function bRef(){
+	bCallShell("ls");
+}
+function bReset(){
+	document.getElementById("idate").value = fGenToday();
+	document.getElementById("iloc").value = go_default.loc;
+	document.getElementById("iodo").value = go_default.odo;
+	document.getElementById("icos").value = go_default.cos;
+	document.getElementById("ilit").value = go_default.lit;
+	document.getElementById("icpl").value = "";
+	document.getElementById("icom").value = go_default.com;
+	document.getElementById("irm2").value = "";
+	pai();
+}
+function bNew(){
+	
+	if(gv_new==""){
+		printResponse("error: new file not ready");
+		return;
+	}
+	bCallShell("new");
+}
+function bRm2(){
+
+	if(gv_rm2==C_RM2_INITIAL){
+		printResponse("error: rm parameter not ready");
+		return;
+	}
+	bCallShell("del");
+}
+function bCallShell(iv){
+	
+	post({
+		app:'fuellog',
+		act:iv,
+		data:{
+			new:gv_new,
+			del:gv_rm2
+		}
+	},function(oDataRt){
+		//convert new-line to <br>
+		oDataRt.msg=oDataRt.msg.replace(/\n/g,"<br>");
+		// console.log(oDataRt);
+		printResponse(oDataRt.msg);
+	});
+}
+/*---------------------------------------------*/
+function fPrintGo(){
+	var lv="";
+	for(let key in go){
+		lv=lv+key+":\t"+go[key]+"<br>";
+	}
+
+	printResponse(lv);
+}
+
+
+/*---------------------------------------------*/
+init();
+function init(){
+	fGetInit();
+}
+
+/*---------------------------------------------*/
+
+</script>
+
+</body>
+</html>
+
+

@@ -12,6 +12,7 @@ xmlhttp.open("POST", url, true);
 xmlhttp.onreadystatechange = function() {
   if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 	//rtn in JSON:
+	// console.log(xmlhttp.responseText);
     var oData=JSON.parse(xmlhttp.responseText);	
 	hXhrCallBack(oData);
   }else{

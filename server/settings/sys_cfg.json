@@ -29,6 +29,11 @@
     "TVSWN_SHELL_CHG":"server/shell/tvswn_chg.sh",
     "TVSWN_SHELL_DEL":"server/shell/tvswn_del.sh",
 
+    "PATH_FUELLOG":"/data/fuellog",
+    "FUELLOG_SHELL_LS":"server/shell/fuellog_ls.sh",
+    "FUELLOG_SHELL_NEW":"server/shell/fuellog_new.sh",
+    "FUELLOG_SHELL_DEL":"server/shell/fuellog_del.sh",
+  
     "TIMEOUT_MIN":"15",
 	"_ end":"",
 

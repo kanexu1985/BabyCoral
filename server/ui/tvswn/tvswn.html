@@ -17,12 +17,65 @@
     <div class="row">
         <div class="col">
 			<button type="button" class="btn btn-dark" onClick="bGoHome()">/Home</button>
-			<br>
-			<div id="divcurr">cur sel:</div>
+
         </div>
     </div>
+
+	<div class="row">
+		<div class="col">
+			&nbsp;
+		</div>
+	</div>
+	   
+	<div class="row">
+		<div class="col-9">
+			<input type="text" class="form-control"  id="ipath1" placeholder="file path1" value="" onchange="pai()" onkeyup="pai()"> 
+		</div>
+		<div class="col">
+			<input  class="btn btn-outline-primary" type="button" value="COPY" onClick="bCopy('ipath1')">
+			<input  class="btn btn-outline-primary" type="button" value="GO" onClick="bGo('ipath1')"> 
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-9">
+			<input type="text" class="form-control"  id="ipath2" placeholder="file path2" value="" onchange="pai()" onkeyup="pai()"> 
+		</div>
+		<div class="col">
+			<input  class="btn btn-outline-primary" type="button" value="COPY" onClick="bCopy('ipath2')">
+			<input  class="btn btn-outline-primary" type="button" value="GO" onClick="bGo('ipath2')"> 
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-9">
+			<input type="text" class="form-control"  id="ipath3" placeholder="file path3" value="" onchange="pai()" onkeyup="pai()"> 
+		</div>
+		<div class="col">
+			<input  class="btn btn-outline-primary" type="button" value="COPY" onClick="bCopy('ipath3')">
+			<input  class="btn btn-outline-primary" type="button" value="GO" onClick="bGo('ipath3')"> 
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-9">
+			<input type="text" class="form-control"  id="ipath4" placeholder="file path4" value="" onchange="pai()" onkeyup="pai()"> 
+		</div>
+		<div class="col">
+			<input  class="btn btn-outline-primary" type="button" value="COPY" onClick="bCopy('ipath4')">
+			<input  class="btn btn-outline-primary" type="button" value="GO" onClick="bGo('ipath4')"> 
+		</div>
+	</div>	   
+
+
+	<div class="row">
+		<div class="col">
+			&nbsp;
+		</div>
+	</div>
+
     <div class="row">
         <div class="col">
+			
+			<div id="divcurr">cur sel:</div>
+			<br>
 			<!-- <div class="d-flex"> -->
 				<input type="text" class="form-control"  id="iname" placeholder="name" value="" onchange="pai()" onkeyup="pai()"> 
 				<input type="text" class="form-control"  id="inote" placeholder="note" value="" onchange="pai()" onkeyup="pai()" > 
@@ -90,6 +143,11 @@ function pai(){
 
    updatePrev(gv_new);
    updateSel(gv_sel);
+   
+   setPathToCookie("ipath1");
+   setPathToCookie("ipath2");
+   setPathToCookie("ipath3");
+   setPathToCookie("ipath4");
 }
 function updateSel(iv){
     document.getElementById("divcurr").innerHTML="cur sel: "+iv;
@@ -114,9 +172,36 @@ function fGenNewFile(){
 	return rtv;
 }
 
+function setPathToCookie(iv){
+	var lv=document.getElementById(iv).value;
+	setCookie(iv,lv,365);
+}
+function setCookieToPath(iv){
+	var lv=getCookie(iv);
+	document.getElementById(iv).value=lv;
+}
+
 /*---------------------------------------------*/
 function goto(iv_url){
 	window.location.replace(iv_url);
+}
+function setCookie(cname,cvalue,exdays)
+{
+  var d = new Date();
+  d.setTime(d.getTime()+(exdays*24*60*60*1000));
+  var expires = "expires="+d.toGMTString();
+  document.cookie = cname + "=" + encodeURI(cvalue) + "; " + expires;
+}
+function getCookie(cname)
+{
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0; i<ca.length; i++) 
+  {
+    var c = ca[i].trim();
+    if (c.indexOf(name)==0) return decodeURI( c.substring(name.length,c.length) );
+  }
+  return "";
 }
 /*---------------------------------------------*/
 
@@ -147,6 +232,23 @@ function post(io,cbf){
 	},function(){
 		printResponse("server error");
 	});
+}
+
+function fCopy(i_divid) {
+  // Get the text field
+  var copyText = document.getElementById(i_divid);
+
+  // Select the text field
+  copyText.select();
+  copyText.setSelectionRange(0, 99999); // For mobile devices
+
+  // Copy the text inside the text field
+  navigator.clipboard.writeText(copyText.value);
+  
+  // Alert the copied text
+//   alert("Copied the text: " + copyText.value);
+  printResponse("Copied the text: " + copyText.value);
+  copyText.setSelectionRange(0, 0); // For mobile devices
 }
 /*---------------------------------------------*/
 function bGoHome(){
@@ -230,6 +332,16 @@ function bCallShell(iv){
 		printList(oDataRt.msg);
 	});
 }
+
+function bCopy(iv){
+	fCopy(iv);
+}
+function bGo(iv){
+	var lv_url = document.getElementById(iv).value ;
+	// goto(document.getElementById(iv).value);
+	// window.open(lv_url, '_blank').focus();
+	window.open(lv_url, '_blank');
+}
 /*---------------------------------------------*/
 function fPrintGo(){
 	var lv="";
@@ -263,6 +375,12 @@ function genListSingle(iv){
 /*---------------------------------------------*/
 init();
 function init(){
+	
+	setCookieToPath("ipath1");
+	setCookieToPath("ipath2");
+	setCookieToPath("ipath3");
+	setCookieToPath("ipath4");
+
 	bRef();
 }
 
